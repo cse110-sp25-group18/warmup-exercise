@@ -26,14 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
         shuffleButton.disabled = true;
         
         // Get all cards
-        const cards = deckContainer.querySelectorAll('card-element');
-        if (cards.length < 1) {
+        const allCards = deckContainer.querySelectorAll('card-element');
+        if (allCards.length < 1) {
             shuffleButton.disabled = false;
             return;
         }
         
-        // Only animate up to 3 cards if there are more
-        const cardsToAnimate = Array.from(cards).slice(0, 3);
+        // Only get visible cards for animation (max 3)
+        const visibleCards = Array.from(allCards).filter(card => card.style.display !== 'none');
+        const cardsToAnimate = visibleCards.slice(0, 3);
         
         // Define animation timing constants
         const alignDuration = 150;      // Time to align cards
@@ -48,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             zIndex: card.style.zIndex || '0'
         }));
         
-        // Step 1: Align all cards perfectly on top of each other
+        // Step 1: Align all visible cards perfectly on top of each other
         cardsToAnimate.forEach(card => {
             card.style.transition = `all ${alignDuration}ms ease-in-out`;
             // Store original transform for use in animations
@@ -94,17 +95,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Step 4: Shuffle and return to stacked layout
         setTimeout(() => {
-            // Hide cards during shuffle
-            cards.forEach(card => {
+            // Hide visible cards during shuffle
+            visibleCards.forEach(card => {
                 card.style.transition = "none";
                 card.style.opacity = "0";
             });
             
-            // Remove all cards
-            cards.forEach(card => deckContainer.removeChild(card));
+            // Remove all cards (both visible and hidden)
+            allCards.forEach(card => deckContainer.removeChild(card));
             
-            // Shuffle the array
-            const shuffledCards = Array.from(cards).sort(() => Math.random() - 0.5);
+            // Shuffle the array of all cards
+            const shuffledCards = Array.from(allCards).sort(() => Math.random() - 0.5);
             
             // Add cards back in reverse order
             for (let i = shuffledCards.length - 1; i >= 0; i--) {
@@ -113,13 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Wait a bit to allow DOM to update
             setTimeout(() => {
-                // Re-arrange cards in the stack
+                // Re-arrange cards in the stack, which will handle showing/hiding properly
                 arrangeCardsInStack();
                 
-                // Show cards again
-                cards.forEach(card => {
-                    card.style.transition = "";
-                    card.style.opacity = "1";
+                // Show visible cards again
+                deckContainer.querySelectorAll('card-element').forEach(card => {
+                    if (card.style.display !== 'none') {
+                        card.style.transition = "";
+                        card.style.opacity = "1";
+                    }
                 });
                 
                 // Re-enable shuffle button
@@ -133,34 +136,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const suits = ["hearts", "diamonds", "spades", "clubs"];
     const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     
-    // Add a few test cards - reversed order since we're prepending
-    // The last one added will be the top card (first in DOM)
-    addCard("clubs", "Q");
-    addCard("hearts", "K");
-    addCard("spades", "A");
+    // Add test cards - the last one added will be the top card (first in DOM)
+    // Adding a total of 5 cards to demonstrate the hide/show functionality
+    addCard("clubs", "Q");  // This will be hidden (4th card)
+    addCard("spades", "J"); // This will be hidden (5th card)
+    addCard("diamonds", "2"); // This will be visible (3rd card)
+    addCard("hearts", "K"); // This will be visible (2nd card)
+    addCard("spades", "A"); // This will be visible (1st/top card)
+
     
     // Function to arrange cards in a stacked layout
     function arrangeCardsInStack() {
         const cards = deckContainer.querySelectorAll('card-element');
         const offset = 5; // Offset in pixels between cards
         
+        // Determine how many cards to show (max 3)
+        const cardsToShow = Math.min(cards.length, 3);
+        
         cards.forEach((card, index) => {
             // Reverse the z-index logic so the first card is on top
             card.style.zIndex = index === 0 ? 100 : (100 - index); // First card has highest z-index
             
-            // Still offset each card the same way
-            card.style.left = `${index * offset}px`;
-            card.style.top = `${index * offset}px`;
-            
-            // Only enable click events and hover effects on the first card (top card)
-            if (index === 0) { // Changed from index === cards.length - 1
-                card.style.pointerEvents = 'auto';
-                card.classList.add('top-card'); // Add class for hover effect
-                card.isTopCard = true; // Set property on the card object
+            if (index < cardsToShow) {
+                // Card is one of the first three, show it with offset
+                card.style.display = 'block';
+                card.style.left = `${index * offset}px`;
+                card.style.top = `${index * offset}px`;
+                
+                // Only enable click events and hover effects on the first card (top card)
+                if (index === 0) {
+                    card.style.pointerEvents = 'auto';
+                    card.classList.add('top-card'); // Add class for hover effect
+                    card.isTopCard = true; // Set property on the card object
+                } else {
+                    card.style.pointerEvents = 'none';
+                    card.classList.remove('top-card'); // Remove class from non-top cards
+                    card.isTopCard = false; // Clear property on non-top cards
+                }
             } else {
+                // Card beyond the first three, hide it but keep in DOM
+                card.style.display = 'none';
                 card.style.pointerEvents = 'none';
-                card.classList.remove('top-card'); // Remove class from non-top cards
-                card.isTopCard = false; // Clear property on non-top cards
+                card.classList.remove('top-card');
+                card.isTopCard = false;
             }
         });
     }
