@@ -94,7 +94,7 @@ class Card extends HTMLElement {
         
         const linkElem = document.createElement("link");
         linkElem.setAttribute("rel", "stylesheet");
-        linkElem.setAttribute("href", "styles/card.css");
+        linkElem.setAttribute("href", "style/card.css");
         this.shadowRoot.appendChild(linkElem);
 
         const card = document.createElement("div");
