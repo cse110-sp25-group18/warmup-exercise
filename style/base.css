@@ -64,31 +64,6 @@ h1 {
     transform: rotateY(180deg);
 }
 
-.card-front, .card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.card-front {
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    transform: rotateY(180deg);
-    color: #000;
-}
-
-.card-back {
-    background-color: #2980b9;
-    background-image: linear-gradient(135deg, #3498db 25%, #2980b9 25%, #2980b9 50%, #3498db 50%, #3498db 75%, #2980b9 75%, #2980b9 100%);
-    background-size: 40px 40px;
-}
-
 button {
     padding: 10px 20px;
     margin: 10px;
