@@ -35,7 +35,6 @@
     cursor: pointer;
 }
 
-/* 修复翻转效果 */
 .card.face-up {
     transform: rotateY(0deg);
 }
@@ -75,7 +74,7 @@
     background-size: 40px 40px;
     transform: rotateY(180deg);
     z-index: 1;
-    overflow: hidden; /* 防止内容溢出 */
+    overflow: hidden;
 }
 
 .back-pattern {
@@ -142,13 +141,11 @@
     color: #212121;
 }
 
-/* 当卡片不是face-up时隐藏正面内容 */
 .card:not(.face-up) .card-front .corner,
 .card:not(.face-up) .card-front .center {
     display: none;
 }
 
-/* 确保翻转正确 */
 .card.face-up .card-front {
     z-index: 2;
 }

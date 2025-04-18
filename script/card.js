@@ -92,11 +92,10 @@ class Card extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = "";
         
-        const style = document.createElement("style");
-        style.textContent = `
-            @import url("../style/card.css");
-        `;
-        this.shadowRoot.appendChild(style);
+        const linkElem = document.createElement("link");
+        linkElem.setAttribute("rel", "stylesheet");
+        linkElem.setAttribute("href", "styles/card.css");
+        this.shadowRoot.appendChild(linkElem);
 
         const card = document.createElement("div");
         card.className = "card";
@@ -146,12 +145,10 @@ class Card extends HTMLElement {
         topCorner.appendChild(topValue);
         topCorner.appendChild(topSuit);
 
-        // 中心
         const center = document.createElement("div");
         center.className = `center ${suitClass}`;
         center.textContent = suitSymbol;
 
-        // 右下角
         const bottomCorner = document.createElement("div");
         bottomCorner.className = "corner bottom";
 
