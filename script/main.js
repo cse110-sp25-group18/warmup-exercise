@@ -22,33 +22,93 @@ document.addEventListener('DOMContentLoaded', () => {
     shuffleButton.addEventListener("click", function () {
         console.log("shuffle button clicked");
         
-        // Rotate the entire deck container
-        deckContainer.style.transition = "transform 0.5s";
-        deckContainer.style.transform = "rotate(360deg)";
-
+        // Disable button during animation
+        shuffleButton.disabled = true;
+        
+        // Get all cards
+        const cards = deckContainer.querySelectorAll('card-element');
+        if (cards.length < 1) {
+            shuffleButton.disabled = false;
+            return;
+        }
+        
+        // Only animate up to 3 cards if there are more
+        const cardsToAnimate = Array.from(cards).slice(0, 3);
+        
+        // Define animation timing constants
+        const alignDuration = 150;      // Time to align cards
+        const animationDuration = 300;  // Time for each card to go up or down
+        const cardDelay = 200;          // Delay between each card's animation
+        const finalDelay = 150;         // Delay before returning to original positions
+        
+        // Save original transforms and positions for later
+        const originalTransforms = cardsToAnimate.map(card => ({
+            left: card.style.left || '0px',
+            top: card.style.top || '0px',
+            zIndex: card.style.zIndex || '0'
+        }));
+        
+        // Step 1: Align all cards perfectly on top of each other
+        cardsToAnimate.forEach(card => {
+            card.style.transition = `all ${alignDuration}ms ease-in-out`;
+            // Store original transform for use in animations
+            card.dataset.originalTransform = card.style.transform || '';
+            // Set left and top to 0 (remove offsets)
+            card.style.left = '0px';
+            card.style.top = '0px';
+        });
+        
+        // Calculate timing for each animation step
+        const startTime = alignDuration + 50; // Add a small buffer
+        
+        // Each card going up timing
+        const upTimes = cardsToAnimate.map((_, index) => 
+            startTime + (index * cardDelay));
+        
+        // Each card going down timing (after all cards are up)
+        const lastCardUpTime = upTimes[upTimes.length - 1] + animationDuration;
+        const downTimes = cardsToAnimate.map((_, index) => 
+            lastCardUpTime + cardDelay + (index * cardDelay));
+        
+        // Time to return to original positions
+        const lastCardDownTime = downTimes[downTimes.length - 1] + animationDuration;
+        const returnTime = lastCardDownTime + finalDelay;
+        
+        // Step 2: Animate each card up in sequence
+        cardsToAnimate.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.transition = `transform ${animationDuration}ms ease-in-out`;
+                // Save current transform and add translateY
+                card.style.transform = `translateY(-30px)`;
+            }, upTimes[index]);
+        });
+        
+        // Step 3: Animate each card down in the same sequence
+        cardsToAnimate.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.transition = `transform ${animationDuration}ms ease-in-out`;
+                // Return to flat position (no translateY)
+                card.style.transform = '';
+            }, downTimes[index]);
+        });
+        
+        // Step 4: Shuffle and return to stacked layout
         setTimeout(() => {
-            // Reset the container rotation
-            deckContainer.style.transition = "";
-            deckContainer.style.transform = "";
-            
-            // Get all cards and temporarily hide them during shuffle
-            const cards = Array.from(deckContainer.querySelectorAll('card-element'));
+            // Hide cards during shuffle
             cards.forEach(card => {
-                card.style.transition = "none"; // Disable transitions during shuffle
-                card.style.opacity = "0"; // Hide cards temporarily
+                card.style.transition = "none";
+                card.style.opacity = "0";
             });
             
             // Remove all cards
             cards.forEach(card => deckContainer.removeChild(card));
             
             // Shuffle the array
-            cards.sort(() => Math.random() - 0.5);
+            const shuffledCards = Array.from(cards).sort(() => Math.random() - 0.5);
             
-            // Important: Reverse the append order to maintain first-child-on-top behavior
-            // We need to add cards in reverse shuffled order so the first card is on top
-            // This ensures the first card in DOM is the top card
-            for (let i = cards.length - 1; i >= 0; i--) {
-                deckContainer.appendChild(cards[i]);
+            // Add cards back in reverse order
+            for (let i = shuffledCards.length - 1; i >= 0; i--) {
+                deckContainer.appendChild(shuffledCards[i]);
             }
             
             // Wait a bit to allow DOM to update
@@ -56,13 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Re-arrange cards in the stack
                 arrangeCardsInStack();
                 
-                // Fade cards back in with proper positioning
+                // Show cards again
                 cards.forEach(card => {
-                    card.style.transition = ""; // Re-enable transitions
-                    card.style.opacity = "1"; // Show cards
+                    card.style.transition = "";
+                    card.style.opacity = "1";
                 });
+                
+                // Re-enable shuffle button
+                shuffleButton.disabled = false;
             }, 50);
-        }, 500);
+        }, returnTime);
     });
 
     console.log("script loaded");
