@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Flip Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .pass { color: green; }
+        .fail { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Card Component Tests</h1>
+    <div class="test-results" id="results">
+        <p>Running tests...</p>
+    </div>
+    
+    <div id="test-container" style="display: none;"></div>
+    
+    <script type="module" src="./Test/FlipTest.js"></script>
+</body>
+</html>
