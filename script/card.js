@@ -3,15 +3,51 @@ class Card extends HTMLElement {
         super();
         this._suit = "";
         this._rank = "";
-        this._isFaceUp = true;
+        this._isFaceUp = false; // Initialize as face down
+        this._index = 0; // Add index for stacking order
+        this._isTopCard = false; // Track if this is the top card
 
         this.attachShadow({ mode: "open" });
 
         this.render();
         
         this.addEventListener("click", () => {
-            this.toggle();
+            // Only respond to clicks if this is the top card
+            if (this._isTopCard || this.classList.contains('top-card')) {
+                this.toggle();
+            }
         });
+    }
+
+    // Getter and setter for top card status
+    get isTopCard() {
+        return this._isTopCard;
+    }
+
+    set isTopCard(value) {
+        this._isTopCard = value;
+        // Update visual state when top card status changes
+        if (value) {
+            this.classList.add('top-card');
+        } else {
+            this.classList.remove('top-card');
+        }
+    }
+
+    // Getter and setter for stacking index
+    get index() {
+        return this._index;
+    }
+
+    set index(value) {
+        this._index = value;
+        // Update visual position when index changes
+        this.updatePosition();
+    }
+
+    updatePosition() {
+        // This method can be called externally to update positioning
+        // It's useful if we need to adjust position from outside
     }
 
     get suit() {
