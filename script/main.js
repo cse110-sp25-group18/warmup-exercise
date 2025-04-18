@@ -19,11 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    shuffleButton.addEventListener("click", function () {
+    shuffleButton.addEventListener("click", function handleShuffle() {
         console.log("shuffle button clicked");
         
         // Disable button during animation
         shuffleButton.disabled = true;
+        flipButton.disabled = true;
         
         // Get all cards
         const allCards = deckContainer.querySelectorAll('card-element');
@@ -35,6 +36,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Only get visible cards for animation (max 3)
         const visibleCards = Array.from(allCards).filter(card => card.style.display !== 'none');
         const cardsToAnimate = visibleCards.slice(0, 3);
+        const topCardFlipped = false;
+        cardsToAnimate.forEach(card => {
+            if(card._isFaceUp){
+                card.toggle();
+                setTimeout(handleShuffle, 700);
+                topCardFlipped = true;
+            }
+        });
+        if (topCardFlipped) return;
         
         // Define animation timing constants
         const alignDuration = 150;      // Time to align cards
@@ -127,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Re-enable shuffle button
                 shuffleButton.disabled = false;
+                flipButton.disabled = false;
             }, 50);
         }, returnTime);
     });
