@@ -98,10 +98,15 @@ class Card extends HTMLElement {
         this.shadowRoot.appendChild(linkElem);
 
         const card = document.createElement("div");
-        card.className = "card";
+        card.className = "card initial-load";
         if (this._isFaceUp) {
             card.classList.add("face-up");
         }
+
+        // Remove initial-load class after a short delay to allow transitions
+        setTimeout(() => {
+            card.classList.remove("initial-load");
+        }, 50);
 
         const cardFront = document.createElement("div");
         cardFront.className = "card-front";

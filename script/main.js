@@ -139,6 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     deckContainer.appendChild(allCards[i]);
                 }
                 
+                // Debug: Log the order of cards after shuffle
+                console.log('Cards after shuffle (top to bottom):');
+                allCards.forEach((card, index) => {
+                    console.log(`${index + 1}. ${card.rank} of ${card.suit}`);
+                });
+                
                 // Re-arrange cards in the stack
                 arrangeCardsInStack();
                 
