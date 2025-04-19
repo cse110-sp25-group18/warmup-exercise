@@ -170,7 +170,7 @@
     }
 }
   
-:host(.dealt-out) {
+:host(.fade-out) {
     animation: slideOutFadeOut 0.5s ease-out forwards;
 }
 @keyframes slideInFadeIn {
@@ -184,9 +184,9 @@
     }
 }
   
-:host(.dealt-in) {
+:host(.fade-in) {
     animation: slideInFadeIn 0.6s ease-out forwards;
 }
 :host(.unrender){
-    opacity: 0;
+    display: none;
 }
