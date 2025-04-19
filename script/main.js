@@ -161,29 +161,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dealButton.addEventListener("click", function () {
         dealButton.disabled = true;
+        shuffleButton.disabled = true;
+        flipButton.disabled = true;
 
         //extract first card
         const allCards = deckContainer.querySelectorAll('card-element');
         const cardToDeal = allCards[0];
-        cardToDeal.remove();
+        
+        cardToDeal.classList.add("dealt-out");
         // fade out card from deck
-        // setTimeout(() => {
-        //     slideCardIntoDeck(cardToDeal);
-        //     //cardToDeal.classList.remove("dealt-in", "in-deck");
-        //     if (!cardToDeal._isFaceUp) {
-        //         cardToDeal.toggle();
-        //     }
-        //     arrangeCardsInStack();
-        //     dealButton.disabled = false;
-        // }, 600);
-        slideCardIntoDeck(cardToDeal);
-        arrangeCardsInStack();
-        dealButton.disabled = false;
+        setTimeout(() => {
+            cardToDeal.remove();
+            slideCardIntoHand(cardToDeal);
+            if (!cardToDeal._isFaceUp) {
+                cardToDeal.toggle();
+            }
+            arrangeCardsInStack();
+            dealButton.disabled = false;
+            shuffleButton.disabled = false;
+            flipButton.disabled = false;
+        }, 600);
     });
-    
-    function slideCardIntoDeck(card) {
-        card.classList.add("in-hand");
-        handContainer.appendChild(card);         // add to the DOM
+    function slideCardIntoHand(card) {
+        card.classList.add("in-hand", "unrender");
+        handContainer.appendChild(card);  // add to the DOM
+        card.classList.add("dealt-in");
+        card.classList.remove("unrender");
     }
 
     console.log("script loaded");

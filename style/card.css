@@ -156,6 +156,37 @@
     z-index: 2;
 }
 :host(.in-hand){
-    position: static !important;
+    position: static;
     flex-shrink: 1;
+}
+@keyframes slideOutFadeOut {
+    0% {
+      transform: translateY(0px); /* Start from below the deck */
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(40px);   /* End at deck level */
+      opacity: 0;
+    }
+}
+  
+:host(.dealt-out) {
+    animation: slideOutFadeOut 0.5s ease-out forwards;
+}
+@keyframes slideInFadeIn {
+    0% {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+}
+  
+:host(.dealt-in) {
+    animation: slideInFadeIn 0.6s ease-out forwards;
+}
+:host(.unrender){
+    opacity: 0;
 }
