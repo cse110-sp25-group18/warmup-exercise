@@ -103,43 +103,58 @@ document.addEventListener('DOMContentLoaded', () => {
             }, downTimes[index]);
         });
         
-        // Step 4: Shuffle and return to stacked layout
+        // Step 4: Complete the animation sequence
         setTimeout(() => {
-            // Hide visible cards during shuffle
-            visibleCards.forEach(card => {
-                card.style.transition = "none";
-                card.style.opacity = "0";
+            // Return all cards to their original positions
+            cardsToAnimate.forEach((card, index) => {
+                card.style.transition = `all ${alignDuration}ms ease-in-out`;
+                card.style.left = originalTransforms[index].left;
+                card.style.top = originalTransforms[index].top;
+                card.style.zIndex = originalTransforms[index].zIndex;
             });
-            
-            // Remove all cards (both visible and hidden)
-            allCards.forEach(card => deckContainer.removeChild(card));
-            
-            // Shuffle the array of all cards
-            const shuffledCards = Array.from(allCards).sort(() => Math.random() - 0.5);
-            
-            // Add cards back in reverse order
-            for (let i = shuffledCards.length - 1; i >= 0; i--) {
-                deckContainer.appendChild(shuffledCards[i]);
-            }
-            
-            // Wait a bit to allow DOM to update
+
+            // After animation completes, perform Fisher-Yates shuffle
             setTimeout(() => {
-                // Re-arrange cards in the stack, which will handle showing/hiding properly
-                arrangeCardsInStack();
+                // Get all cards (both visible and hidden)
+                const allCards = Array.from(deckContainer.querySelectorAll('card-element'));
                 
-                // Show visible cards again
-                deckContainer.querySelectorAll('card-element').forEach(card => {
-                    if (card.style.display !== 'none') {
-                        card.style.transition = "";
-                        card.style.opacity = "1";
+                // Fisher-Yates shuffle algorithm
+                for (let i = allCards.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [allCards[i], allCards[j]] = [allCards[j], allCards[i]];
+                }
+                
+                // Remove all cards from DOM
+                allCards.forEach(card => deckContainer.removeChild(card));
+                
+                // Ensure all cards are face down before adding back
+                allCards.forEach(card => {
+                    if (card._isFaceUp) {
+                        card.toggle();
                     }
                 });
                 
-                // Re-enable shuffle button
+                // Add shuffled cards back in reverse order
+                for (let i = allCards.length - 1; i >= 0; i--) {
+                    deckContainer.appendChild(allCards[i]);
+                }
+                
+                // Debug: Log the order of cards after shuffle
+                console.log('Cards after shuffle (top to bottom):');
+                allCards.forEach((card, index) => {
+                    console.log(`${index + 1}. ${card.rank} of ${card.suit}`);
+                });
+                
+                // Re-arrange cards in the stack
+                arrangeCardsInStack();
+                
+                // Re-enable buttons
                 shuffleButton.disabled = false;
                 flipButton.disabled = false;
-            }, 50);
-        }, returnTime);
+            }, alignDuration);
+        }, returnTime + animationDuration);
+
+        
     });
 
     console.log("script loaded");
