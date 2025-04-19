@@ -1,4 +1,4 @@
-//script.js
+// script.js
 import Card from "./card.js";
 
 customElements.define('card-element', Card);
@@ -6,12 +6,51 @@ customElements.define('card-element', Card);
 document.addEventListener('DOMContentLoaded', () => {
     const deckContainer = document.getElementById("deck-container");
 
-    const flipButton = document.getElementById("flip-button");
+    const flipDeckButton = document.getElementById("flip-deck-button")
+    const flipCardButton = document.getElementById("flip-card-button");
     const shuffleButton = document.getElementById("shuffle-button");
 
-    flipButton.addEventListener("click", function () {
-        console.log("Flip button clicked");
+    flipDeckButton.addEventListener("click", function () {
+        console.log("Flip deck button clicked");
+
+        const cards = Array.from(document.querySelectorAll("card-element"));
+        cards.forEach(card => deckContainer.removeChild(card));
+        cards.reverse();
+        cards.forEach(card => deckContainer.appendChild(card));
+        arrangeCardsInStack();
+
+        let faceUp = 0;
+        let faceDown = 0;
+
+        cards.forEach(card => {
+            if (card._isFaceUp) {
+                faceUp++;
+            } else {
+                faceDown++;
+            }
+        });
+
+        setTimeout( () => {
+            if (faceUp > faceDown) {
+                cards.forEach(card => {
+                    if (card._isFaceUp) {
+                        card.toggle();
+                    }
+                })
+            } else {
+                cards.forEach(card => {
+                    if (!card._isFaceUp) {
+                        card.toggle();
+                    }
+                });
+            }
+        }, 0);
+    });
+
+    flipCardButton.addEventListener("click", function () {
+        console.log("Flip card button clicked");
         const cards = document.querySelectorAll('card-element');
+
         // Only flip the top card 
         if (cards.length > 0) {
             const topCard = cards[0]; 
@@ -24,7 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Disable button during animation
         shuffleButton.disabled = true;
-        flipButton.disabled = true;
+        flipCardButton.disabled = true;
+        flipDeckButton.disabled = true;
         
         // Get all cards
         const allCards = deckContainer.querySelectorAll('card-element');
@@ -137,7 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Re-enable shuffle button
                 shuffleButton.disabled = false;
-                flipButton.disabled = false;
+                flipCardButton.disabled = false;
+                flipDeckButton.disabled = false;
             }, 50);
         }, returnTime);
     });
