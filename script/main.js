@@ -113,12 +113,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.zIndex = originalTransforms[index].zIndex;
             });
 
-            // Re-enable buttons after animation completes
+            // After animation completes, perform Fisher-Yates shuffle
             setTimeout(() => {
+                // Get all cards (both visible and hidden)
+                const allCards = Array.from(deckContainer.querySelectorAll('card-element'));
+                
+                // Fisher-Yates shuffle algorithm
+                for (let i = allCards.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [allCards[i], allCards[j]] = [allCards[j], allCards[i]];
+                }
+                
+                // Remove all cards from DOM
+                allCards.forEach(card => deckContainer.removeChild(card));
+                
+                // Ensure all cards are face down before adding back
+                allCards.forEach(card => {
+                    if (card._isFaceUp) {
+                        card.toggle();
+                    }
+                });
+                
+                // Add shuffled cards back in reverse order
+                for (let i = allCards.length - 1; i >= 0; i--) {
+                    deckContainer.appendChild(allCards[i]);
+                }
+                
+                // Re-arrange cards in the stack
+                arrangeCardsInStack();
+                
+                // Re-enable buttons
                 shuffleButton.disabled = false;
                 flipButton.disabled = false;
             }, alignDuration);
         }, returnTime + animationDuration);
+
+        
     });
 
     console.log("script loaded");
