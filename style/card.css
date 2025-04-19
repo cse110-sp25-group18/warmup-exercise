@@ -9,11 +9,6 @@
     transition: transform 0.3s, top 0.3s, left 0.3s, z-index 0.1s;
 }
 
-/* Remove general hover effect */
-:host(:hover) {
-    /* No general hover effect */
-}
-
 /* Add specific class for top card that gets the hover effect */
 :host(.top-card:hover) {
     transform: translateY(-10px);
@@ -159,4 +154,8 @@
 
 .card:not(.face-up) .card-back {
     z-index: 2;
+}
+:host(.in-hand){
+    position: static !important;
+    flex-shrink: 1;
 }

@@ -5,9 +5,11 @@ customElements.define('card-element', Card);
 
 document.addEventListener('DOMContentLoaded', () => {
     const deckContainer = document.getElementById("deck-container");
+    const handContainer = document.getElementById("hand-container");
 
     const flipButton = document.getElementById("flip-button");
     const shuffleButton = document.getElementById("shuffle-button");
+    const dealButton = document.getElementById("deal-button");
 
     flipButton.addEventListener("click", function () {
         console.log("Flip button clicked");
@@ -156,6 +158,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         
     });
+
+    dealButton.addEventListener("click", function () {
+        dealButton.disabled = true;
+
+        //extract first card
+        const allCards = deckContainer.querySelectorAll('card-element');
+        const cardToDeal = allCards[0];
+        cardToDeal.remove();
+        // fade out card from deck
+        // setTimeout(() => {
+        //     slideCardIntoDeck(cardToDeal);
+        //     //cardToDeal.classList.remove("dealt-in", "in-deck");
+        //     if (!cardToDeal._isFaceUp) {
+        //         cardToDeal.toggle();
+        //     }
+        //     arrangeCardsInStack();
+        //     dealButton.disabled = false;
+        // }, 600);
+        slideCardIntoDeck(cardToDeal);
+        arrangeCardsInStack();
+        dealButton.disabled = false;
+    });
+    
+    function slideCardIntoDeck(card) {
+        card.classList.add("in-hand");
+        handContainer.appendChild(card);         // add to the DOM
+    }
 
     console.log("script loaded");
 
