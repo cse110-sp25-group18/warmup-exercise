@@ -30,6 +30,11 @@
     transform-origin: center center;
 }
 
+/* Prevent initial transition */
+.card.initial-load {
+    transition: none;
+}
+
 /* Make only the top card appear clickable */
 :host(.top-card) .card {
     cursor: pointer;
