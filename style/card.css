@@ -9,11 +9,6 @@
     transition: transform 0.3s, top 0.3s, left 0.3s, z-index 0.1s;
 }
 
-/* Remove general hover effect */
-:host(:hover) {
-    /* No general hover effect */
-}
-
 /* Add specific class for top card that gets the hover effect */
 :host(.top-card:hover) {
     transform: translateY(-10px);
@@ -159,4 +154,39 @@
 
 .card:not(.face-up) .card-back {
     z-index: 2;
+}
+:host(.in-hand){
+    position: static;
+    flex-shrink: 1;
+}
+@keyframes slideOutFadeOut {
+    0% {
+      transform: translateY(0px); /* Start from below the deck */
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(40px);   /* End at deck level */
+      opacity: 0;
+    }
+}
+  
+:host(.fade-out) {
+    animation: slideOutFadeOut 0.5s ease-out forwards;
+}
+@keyframes slideInFadeIn {
+    0% {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+}
+  
+:host(.fade-in) {
+    animation: slideInFadeIn 0.6s ease-out forwards;
+}
+:host(.unrender){
+    display: none;
 }
