@@ -9,6 +9,8 @@ class CardController {
         // Connect the view to its model
         this.view.model = this.model;
         
+        this.clickHandler = this.handleCardClick.bind(this);
+        
         // Set up event listeners
         this.setupEventListeners();
         
@@ -16,13 +18,24 @@ class CardController {
         this.view.render();
     }
     
-    // Set up event listeners for user interactions
+    handleCardClick() {
+        // Card-click event only comes from top cards, so toggle it
+        this.toggleCard();
+    }
+    
     setupEventListeners() {
-        // Handle card click events
-        this.view.addEventListener('card-click', () => {
-            // Card-click event only comes from top cards, so toggle it
-            this.toggleCard();
-        });
+        this.view.addEventListener('card-click', this.clickHandler);
+    }
+    
+    disableClick() {
+        this.view.removeEventListener('card-click', this.clickHandler);
+        console.log(`Card ${this.model.suit} ${this.model.rank} click disabled`);
+    }
+    
+    enableClick() {
+        this.view.removeEventListener('card-click', this.clickHandler);
+        this.view.addEventListener('card-click', this.clickHandler);
+        console.log(`Card ${this.model.suit} ${this.model.rank} click enabled`);
     }
     
     // Update model and view when toggling the card

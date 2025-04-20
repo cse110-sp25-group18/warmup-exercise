@@ -158,6 +158,18 @@
 :host(.in-hand){
     position: static;
     flex-shrink: 1;
+    margin: 0 -50px 0 0; /* Negative margin ensures cards overlap properly */
+    z-index: auto !important; /* Let natural DOM order control z-index */
+}
+
+/* First card in each hand needs normal margin */
+:host(.in-hand:first-child) {
+    margin-left: 0;
+}
+
+/* Ensure face down cards in hand still show */
+:host(.in-hand) .card:not(.face-up) {
+    display: block !important;
 }
 @keyframes slideOutFadeOut {
     0% {

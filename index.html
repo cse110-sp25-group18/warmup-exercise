@@ -17,24 +17,39 @@
         
         <div id="hand-container-dealer">
             <!-- Dealer's hand container -->
+            <div class="score-display">Dealer: <span id="dealer-score">0</span></div>
         </div>
 
-        <div id="deck-container">
-            <!-- Add card-container dynamically by JS here -->
-            <!--card-container should have card-front and card-back-->
+        <div class="game-controls">
+            <div id="left-controls">
+                <button id="new-game-button">New Game</button>
+            </div>
+            
+            <div id="deck-container">
+                <!-- Add card-container dynamically by JS here -->
+                <!--card-container should have card-front and card-back-->
+            </div>
+            
+            <div id="right-controls">
+                <button id="hit-button">Hit</button>
+                <button id="stand-button">Stand</button>
+            </div>
         </div>
 
         <div id="hand-container-player">
             <!-- Player's hand container -->
+            <div class="score-display">Player: <span id="player-score">0</span></div>
         </div>
 
-        <button id="flip-button">Flip</button>
-        <button id="shuffle-button">Shuffle</button>
-        <button id="deal-button-dealer">Deal to Dealer</button>
-        <button id="deal-button-player">Deal to Player</button>
-        <button id="reset-button">Reset</button>
+        <div class="admin-controls">
+            <button id="flip-button">Flip</button>
+            <button id="shuffle-button">Shuffle</button>
+            <button id="deal-button-dealer">Deal to Dealer</button>
+            <button id="deal-button-player">Deal to Player</button>
+            <button id="reset-button">Reset</button>
         <button id="rules-button">Rules</button>
 
+        </div>
         <footer>
             <p>Copyright 2025 by CSE110 25 Spring Group 18</p>
         </footer>
