@@ -24,7 +24,7 @@ h1 {
 
 #hand-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     gap: 15px;
     min-height: 150px;
@@ -44,7 +44,13 @@ h1 {
     transition: transform 0.3s;
     margin: 10px;
 }
-
+#hand-container card-element {
+    margin-left: -80px; /* create overlap — adjust as needed */
+    transition: transform 0.3s ease, z-index 0.1s;
+}
+#hand-container card-element:first-child {
+    margin-left: 0;
+}
 .card-container:hover {
     transform: translateY(-5px);
 }
