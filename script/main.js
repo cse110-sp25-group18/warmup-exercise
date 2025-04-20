@@ -210,18 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     console.log("script loaded");
-
-    const suits = ["hearts", "diamonds", "spades", "clubs"];
-    const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-    
-    // Add test cards - the last one added will be the top card (first in DOM)
-    // Adding a total of 5 cards to demonstrate the hide/show functionality
-    addCard("clubs", "Q");  // This will be hidden (4th card)
-    addCard("spades", "J"); // This will be hidden (5th card)
-    addCard("diamonds", "2"); // This will be visible (3rd card)
-    addCard("hearts", "K"); // This will be visible (2nd card)
-    addCard("spades", "A"); // This will be visible (1st/top card)
-
     
     // Function to arrange cards in a stacked layout
     function arrangeCardsInStack() {
@@ -274,5 +262,29 @@ document.addEventListener('DOMContentLoaded', () => {
         // Arrange cards in a stack after adding a new card
         arrangeCardsInStack();
     }
+
+        const suits = ["hearts", "diamonds", "spades", "clubs"];
+        const ranks = [
+            "A",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "J",
+            "Q",
+            "K",
+        ];
+    for (let suit of suits) {
+        for (let rank of ranks) {
+            addCard(suit, rank);
+        }
+    }
+
+    shuffleButton.click();
 });
 
