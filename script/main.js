@@ -175,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let topCardFlipped = false;
         cardsToAnimate.forEach(card => {
             if(card.controller?.isFaceUp()){
+                card.controller?.disableClick();
                 card.controller?.toggleCard();
                 setTimeout(() => handleShuffle(event, callback), 700);
                 topCardFlipped = true;
@@ -330,12 +331,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // - Dealer's first card face up, others face down
             if (targetHandContainer === handContainerPlayer) {
                 // For player, flip card face up if it's face down
+                cardToDeal.controller?.enableClick();
                 if (!cardToDeal.controller?.isFaceUp()) {
                     cardToDeal.controller?.toggleCard();
                 }
             } else if (targetHandContainer === handContainerDealer) {
                 // For dealer, first card face up, others face down
                 const dealerCards = handContainerDealer.querySelectorAll('card-element');
+                
+                cardToDeal.controller?.disableClick();
+                
                 if (dealerCards.length === 1) { // This is the first card
                     if (!cardToDeal.controller?.isFaceUp()) {
                         cardToDeal.controller?.toggleCard();
@@ -462,6 +467,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Store reference to controller in the element for easy access
         cardElement.controller = cardController;
         
+        cardElement.controller?.disableClick();
+        
         // Insert as the first child to make it the top card
         const firstCard = deckContainer.firstChild;
         deckContainer.insertBefore(cardElement, firstCard);
@@ -559,6 +566,12 @@ document.addEventListener('DOMContentLoaded', () => {
             slideCardIntoHand(cardToDeal, targetHandContainer);
             
             setTimeout(() => {
+                if (targetHandContainer === handContainerPlayer) {
+                    cardToDeal.controller?.enableClick();
+                } else {
+                    cardToDeal.controller?.disableClick();
+                }
+                
                 if (faceUp && !cardToDeal.controller?.isFaceUp()) {
                     cardToDeal.controller?.toggleCard();
                 } else if (!faceUp && cardToDeal.controller?.isFaceUp()) {
