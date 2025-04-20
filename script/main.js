@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Only flip the top card 
         if (cards.length > 0) {
             const topCard = cards[0]; 
-            topcard.controller?.toggleCard();
+            topCard.controller?.toggleCard();
         }
     });
 
