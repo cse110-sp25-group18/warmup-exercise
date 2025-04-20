@@ -188,7 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // fade out card from deck
         setTimeout(() => {
             slideCardIntoHand(cardToDeal, targetHandContainer);
-            if (!cardToDeal._isFaceUp) {
+            // Ensure the card is face down (remove the auto-flip to face up)
+            if (cardToDeal._isFaceUp) {
                 cardToDeal.toggle();
             }
             arrangeCardsInStack();

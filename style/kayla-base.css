@@ -38,7 +38,7 @@ h1 {
 
 /* Add a title to each hand */
 #hand-container-1::before {
-    content: "Hand 1";
+    content: "Dealer";
     color: white;
     font-family: 'Spongebob Font Wide', sans-serif;
     position: absolute;
@@ -47,7 +47,7 @@ h1 {
 }
 
 #hand-container-2::before {
-    content: "Hand 2";
+    content: "Player";
     color: white;
     font-family: 'Spongebob Font Wide', sans-serif;
     position: absolute;
