@@ -5,14 +5,17 @@ customElements.define('card-element', Card);
 
 document.addEventListener('DOMContentLoaded', () => {
     const deckContainer = document.getElementById("deck-container");
-    const handContainer = document.getElementById("hand-container");
+    const handContainer1 = document.getElementById("hand-container-1");
+    const handContainer2 = document.getElementById("hand-container-2");
 
     const flipButton = document.getElementById("flip-button");
     const shuffleButton = document.getElementById("shuffle-button");
-    const dealButton = document.getElementById("deal-button");
+    const dealButton1 = document.getElementById("deal-button-1");
+    const dealButton2 = document.getElementById("deal-button-2");
     const resetButton = document.getElementById("reset-button");
     function buttonsOff(value){
-        dealButton.disabled = value;
+        dealButton1.disabled = value;
+        dealButton2.disabled = value;
         flipButton.disabled = value;
         shuffleButton.disabled = value;
         resetButton.disabled = value;
@@ -161,65 +164,96 @@ document.addEventListener('DOMContentLoaded', () => {
         }, returnTime + animationDuration);
     });
 
-    dealButton.addEventListener("click", function () {
+    dealButton1.addEventListener("click", function () {
+        dealCardToHand(handContainer1);
+    });
+
+    dealButton2.addEventListener("click", function () {
+        dealCardToHand(handContainer2);
+    });
+
+    function dealCardToHand(targetHandContainer) {
         buttonsOff(true);
 
         //extract first card
         const allCards = deckContainer.querySelectorAll('card-element');
+        if (allCards.length === 0) {
+            buttonsOff(false);
+            return;
+        }
+        
         const cardToDeal = allCards[0];
         
         cardToDeal.classList.add("fade-out");
         // fade out card from deck
         setTimeout(() => {
-            slideCardIntoHand(cardToDeal);
+            slideCardIntoHand(cardToDeal, targetHandContainer);
             if (!cardToDeal._isFaceUp) {
                 cardToDeal.toggle();
             }
             arrangeCardsInStack();
             buttonsOff(false);
         }, 600);
-    });
+    }
 
     resetButton.addEventListener("click", function () {
         console.log("Reset button clicked");
         buttonsOff(true);
         
-        const cardsInHand = handContainer.querySelectorAll('card-element');
+        // Get cards from both hands
+        const cardsInHand1 = handContainer1.querySelectorAll('card-element');
+        const cardsInHand2 = handContainer2.querySelectorAll('card-element');
         
-        if (cardsInHand.length === 0) {
+        if (cardsInHand1.length === 0 && cardsInHand2.length === 0) {
             buttonsOff(false);
             return;
         }
         
-        cardsInHand.forEach(card => {
+        // Process cards from hand 1
+        cardsInHand1.forEach(card => {
+            card.classList.remove("fade-in");
+            card.classList.add("fade-out");
+        });
+        
+        // Process cards from hand 2
+        cardsInHand2.forEach(card => {
             card.classList.remove("fade-in");
             card.classList.add("fade-out");
         });
         
         setTimeout(() => {
-            cardsInHand.forEach(card => {
-                card.classList.add("unrender");
-                card.classList.remove("fade-out", "in-hand");
-                if (card._isFaceUp) {
-                    card.toggle();
-                }
-                deckContainer.appendChild(card);
-                card.classList.remove("unrender");
-                console.log("card moved back to deck: ", card.rank, card.suit);
+            // Return cards from hand 1
+            cardsInHand1.forEach(card => {
+                returnCardToDeck(card);
+            });
+            
+            // Return cards from hand 2
+            cardsInHand2.forEach(card => {
+                returnCardToDeck(card);
             });
             
             arrangeCardsInStack();
             buttonsOff(false);
             shuffleButton.click();
-
         }, 600);
     });
-    function slideCardIntoHand(card) {
+
+    function returnCardToDeck(card) {
+        card.classList.add("unrender");
+        card.classList.remove("fade-out", "in-hand");
+        if (card._isFaceUp) {
+            card.toggle();
+        }
+        deckContainer.appendChild(card);
+        card.classList.remove("unrender");
+        console.log("card moved back to deck: ", card.rank, card.suit);
+    }
+    
+    function slideCardIntoHand(card, targetHandContainer) {
         card.classList.add("in-hand", "unrender");
-        handContainer.appendChild(card);  // add to the DOM
+        targetHandContainer.appendChild(card);  // add to the DOM
         card.classList.add("fade-in");
         card.classList.remove("unrender");
-
     }
 
     console.log("script loaded");

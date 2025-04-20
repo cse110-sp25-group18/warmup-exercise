@@ -22,7 +22,7 @@ h1 {
     margin: 0 auto 30px auto;
 }
 
-#hand-container {
+#hand-container-1, #hand-container-2 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -34,6 +34,25 @@ h1 {
     background-color: #6F4E37;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Add a title to each hand */
+#hand-container-1::before {
+    content: "Hand 1";
+    color: white;
+    font-family: 'Spongebob Font Wide', sans-serif;
+    position: absolute;
+    margin-top: -30px;
+    font-size: 18px;
+}
+
+#hand-container-2::before {
+    content: "Hand 2";
+    color: white;
+    font-family: 'Spongebob Font Wide', sans-serif;
+    position: absolute;
+    margin-top: -30px;
+    font-size: 18px;
 }
 
 .card-container {
