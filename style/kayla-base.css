@@ -49,6 +49,14 @@ h1::after {
     position: relative;
 }
 
+#hand-container-dealer card-element {
+    margin-left: -80px; /* create overlap — adjust as needed */
+    transition: transform 0.3s ease, z-index 0.1s;
+}
+#hand-container-dealer card-element:first-child {
+    margin-left: 0;
+}
+
 #deck-container {
     position: relative;
     width: 170px;
@@ -58,7 +66,7 @@ h1::after {
 
 #hand-container-player {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     gap: 15px;
     min-height: 150px;
@@ -69,6 +77,14 @@ h1::after {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     position: relative;
+}
+
+#hand-container-player card-element {
+    margin-left: -80px; /* create overlap — adjust as needed */
+    transition: transform 0.3s ease, z-index 0.1s;
+}
+#hand-container-player card-element:first-child {
+    margin-left: 0;
 }
 
 /* Add a title to each hand */
@@ -104,13 +120,7 @@ h1::after {
     transition: transform 0.3s;
     margin: 10px;
 }
-#hand-container card-element {
-    margin-left: -80px; /* create overlap — adjust as needed */
-    transition: transform 0.3s ease, z-index 0.1s;
-}
-#hand-container card-element:first-child {
-    margin-left: 0;
-}
+
 .card-container:hover {
     transform: translateY(-5px);
 }
