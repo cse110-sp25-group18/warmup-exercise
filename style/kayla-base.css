@@ -67,6 +67,21 @@ h1 {
     transform: rotateY(180deg);
 }
 
+#card-counter-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #fafdff;
+    border-radius: 10px;
+    padding: 10px;
+    font-family: 'Spongebob Font Wide', sans-serif;
+    font-size: 16px;
+    color: rgb(5, 0, 0);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 button {
     padding: 10px 20px;
     margin: 10px;
