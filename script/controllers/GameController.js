@@ -218,8 +218,6 @@ class GameController {
         
         // Animation logic for shuffling
         this.animateShuffle(allCards, event, callback);
-
-        // Re-enable buttons
     }
     
     /**
@@ -305,7 +303,6 @@ class GameController {
             setTimeout(() => {
                 this.performShuffle(callback);
             }, alignDuration);
-            this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
         }, returnTime);
         
     }
@@ -405,7 +402,7 @@ class GameController {
             this.updateCounters();
             
             // Re-enable buttons
-            this.setAllButtonStates(false, false, false, false);
+            this.setAllButtonStates(false, false, false, true, false, false);
             
             if (target === 'player') {
                 setTimeout(() => {
@@ -421,7 +418,7 @@ class GameController {
                     
                     // Re-enable buttons only if player hasn't busted
                     this.playerView.setGameActionButtonsState(ENABLE, ENABLE);
-                    this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
+                    this.setAllButtonStates(ENABLE, ENABLE, ENABLE, DISABLE, ENABLE, ENABLE);
                 }, 300);
             }
         });
@@ -432,17 +429,14 @@ class GameController {
      */
     handleReset(callback) {
         console.log("Reset button clicked");
-        
-        // Disable buttons during operation
-        this.setAllButtonStates(true, true, true, true, true, true);
-        
+
         // Get cards from both hands
         const dealerCards = this.playerView.getHandCards('dealer');
         const playerCards = this.playerView.getHandCards('player');
         
         // If no cards in hands, nothing to reset
         if (dealerCards.length === 0 && playerCards.length === 0) {
-            this.setAllButtonStates(false, false, false, false);
+            this.setAllButtonStates(false, false, false, true, true, true);
             this.shuffleDeck(callback);  // call shuffle logic even if nothing was reset
             return;
         }
