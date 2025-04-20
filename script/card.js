@@ -10,13 +10,6 @@ class Card extends HTMLElement {
         this.attachShadow({ mode: "open" });
 
         this.render();
-        
-        this.addEventListener("click", () => {
-            // Only respond to clicks if this is the top card
-            if (this._isTopCard || this.classList.contains('top-card')) {
-                this.toggle();
-            }
-        });
     }
 
     // Getter and setter for top card status
