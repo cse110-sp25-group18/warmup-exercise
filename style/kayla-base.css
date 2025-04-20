@@ -33,20 +33,19 @@ h1::after {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-#hand-container-dealer {
+#hand-container-dealer, #hand-container-player {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
-    gap: 15px;
+    gap: 0;
     min-height: 150px;
-    margin-top: 20px;
     margin-bottom: 50px;
-    padding: 30px;
-    /* background-color: #468666; */
+    padding: 30px 60px;
     background-color: #6F4E37;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     position: relative;
+    overflow: visible;
 }
 
 #deck-container {
@@ -54,21 +53,6 @@ h1::after {
     width: 170px;
     height: 230px;
     margin: 0 auto 50px auto;
-}
-
-#hand-container-player {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    min-height: 150px;
-    margin-bottom: 50px;
-    padding: 30px;
-    /* background-color: #468666; */
-    background-color: #6F4E37;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    position: relative;
 }
 
 /* Add a title to each hand */

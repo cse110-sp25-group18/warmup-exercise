@@ -367,7 +367,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function slideCardIntoHand(card, targetHandContainer) {
         card.classList.add("in-hand", "unrender");
-        targetHandContainer.appendChild(card);  // add to the DOM
+        
+        // Append card to the hand container
+        targetHandContainer.appendChild(card);
+        
+        // Reset any inline styles that might interfere with hand layout
+        card.style.left = "";
+        card.style.top = "";
+        card.style.display = "block";
+        
+        // Ensure proper z-index based on the card's position in the hand
+        const cardsInHand = targetHandContainer.querySelectorAll('card-element');
+        const cardIndex = Array.from(cardsInHand).indexOf(card);
+        card.style.zIndex = cardsInHand.length - cardIndex;
+        
+        // Add fade-in animation
         card.classList.add("fade-in");
         card.classList.remove("unrender");
     }
@@ -454,9 +468,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     shuffleButton.click();
 
-    // Event listeners for the game buttons (to be implemented later)
+    // Event listeners for the game buttons
     newGameButton.addEventListener("click", function() {
-        console.log("New Game button clicked - functionality to be implemented");
+        console.log("New Game button clicked");
+        startNewGame();
     });
     
     hitButton.addEventListener("click", function() {
@@ -466,5 +481,126 @@ document.addEventListener('DOMContentLoaded', () => {
     standButton.addEventListener("click", function() {
         console.log("Stand button clicked - functionality to be implemented");
     });
+    
+    // Function to start a new game of blackjack
+    function startNewGame() {
+        // Disable admin buttons during gameplay
+        dealButtonDealer.disabled = true;
+        dealButtonPlayer.disabled = true;
+        
+        // Check if there are enough cards in the deck
+        const deckCards = deckContainer.querySelectorAll('card-element');
+        if (deckCards.length < 4) {
+            alert("Not enough cards in the deck to start a new game!");
+            return;
+        }
+        
+        // Clear existing hands
+        clearHands();
+        
+        // Deal cards in the proper order (alternating between player and dealer)
+        setTimeout(() => {
+            // First card to player (face up)
+            dealInitialCard(handContainerPlayer, true);
+            
+            setTimeout(() => {
+                // First card to dealer (face up)
+                dealInitialCard(handContainerDealer, true);
+                
+                setTimeout(() => {
+                    // Second card to player (face up)
+                    dealInitialCard(handContainerPlayer, true);
+                    
+                    setTimeout(() => {
+                        // Second card to dealer (face down)
+                        dealInitialCard(handContainerDealer, false);
+                        
+                        // Check for blackjack
+                        setTimeout(() => {
+                            checkInitialBlackjack();
+                        }, 700);
+                    }, 700);
+                }, 700);
+            }, 700);
+        }, 100);
+    }
+    
+    // Function to clear all cards from hands
+    function clearHands() {
+        // Return all cards from hands to the deck
+        const cardsInHandDealer = handContainerDealer.querySelectorAll('card-element');
+        const cardsInHandPlayer = handContainerPlayer.querySelectorAll('card-element');
+        
+        cardsInHandDealer.forEach(card => {
+            returnCardToDeck(card);
+        });
+        
+        cardsInHandPlayer.forEach(card => {
+            returnCardToDeck(card);
+        });
+        
+        shuffleButton.click(); // Shuffle the deck
+        
+        // Reset scores
+        updateHandValues();
+    }
+    
+    // Function to deal a card in the initial deal
+    function dealInitialCard(targetHandContainer, faceUp) {
+        const allCards = deckContainer.querySelectorAll('card-element');
+        if (allCards.length === 0) {
+            return;
+        }
+        
+        const cardToDeal = allCards[0];
+        
+        cardToDeal.classList.add("fade-out");
+        // fade out card from deck
+        setTimeout(() => {
+            slideCardIntoHand(cardToDeal, targetHandContainer);
+            
+            // Set card face up or down as specified
+            if (faceUp && !cardToDeal._isFaceUp) {
+                cardToDeal.toggle();
+            } else if (!faceUp && cardToDeal._isFaceUp) {
+                cardToDeal.toggle();
+            }
+            
+            arrangeCardsInStack();
+            updateHandValues();
+            updateCardCounter();
+        }, 600);
+    }
+    
+    // Function to check for blackjack after initial deal
+    function checkInitialBlackjack() {
+        const playerHasBlackjack = checkBlackjack(handContainerPlayer);
+        
+        // Enable game buttons if no blackjack
+        if (!playerHasBlackjack) {
+            hitButton.disabled = false;
+            standButton.disabled = false;
+        } else {
+            // Player has blackjack - game ends
+            console.log("Player has blackjack!");
+            
+            // Check if dealer also has blackjack
+            const dealerCards = handContainerDealer.querySelectorAll('card-element');
+            const faceDownCard = dealerCards[1];
+            
+            // Flip dealer's face-down card to see if they also have blackjack
+            if (!faceDownCard._isFaceUp) {
+                faceDownCard.toggle();
+                updateHandValues();
+            }
+            
+            // Determine the outcome
+            if (checkBlackjack(handContainerDealer)) {
+                console.log("Dealer also has blackjack! It's a tie.");
+            } else {
+                console.log("Player wins with blackjack!");
+            }
+        }
+    }
 });
 
