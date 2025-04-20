@@ -57,26 +57,26 @@ class CardModel {
         return this._isFaceUp;
     }
 
+    // Get info for the card's suit
+    getSuitInfo() {
+        const suitMap = {
+            "hearts": { symbol: "♥", class: "hearts" },
+            "diamonds": { symbol: "♦", class: "diamonds" },
+            "spades": { symbol: "♠", class: "spades" },
+            "clubs": { symbol: "♣", class: "clubs" }
+        };
+        
+        return suitMap[this._suit] || { symbol: "", class: "" };
+    }
+
     // Get the symbol for the card's suit
     getSuitSymbol() {
-        switch (this._suit) {
-            case "hearts": return "♥";
-            case "diamonds": return "♦";
-            case "spades": return "♠";
-            case "clubs": return "♣";
-            default: return "";
-        }
+        return this.getSuitInfo().symbol;
     }
 
     // Get the CSS class for the card's suit
     getSuitClass() {
-        switch (this._suit) {
-            case "hearts": return "hearts";
-            case "diamonds": return "diamonds";
-            case "spades": return "spades";
-            case "clubs": return "clubs";
-            default: return "";
-        }
+        return this.getSuitInfo().class;
     }
 } 
 
