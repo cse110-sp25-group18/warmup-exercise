@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    shuffleButton.addEventListener("click", function handleShuffle() {
+    shuffleButton.addEventListener("click", function handleShuffle(event, callback) {
         console.log("shuffle button clicked");
         
         // Disable button during animation
@@ -152,17 +152,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const allCards = deckContainer.querySelectorAll('card-element');
         if (allCards.length < 1) {
             shuffleButton.disabled = false;
+            // Use the callback parameter first, fallback to the property if it exists
+            if (callback) {
+                callback();
+            } else if (shuffleButton.shuffleCallback) {
+                shuffleButton.shuffleCallback();
+                shuffleButton.shuffleCallback = null; // Clear it after use
+            }
             return;
         }
         
         // Only get visible cards for animation (max 3)
         const visibleCards = Array.from(allCards).filter(card => card.style.display !== 'none');
         const cardsToAnimate = visibleCards.slice(0, 3);
-        const topCardFlipped = false;
+        let topCardFlipped = false;
         cardsToAnimate.forEach(card => {
             if(card._isFaceUp){
                 card.toggle();
-                setTimeout(handleShuffle, 700);
+                setTimeout(() => handleShuffle(event, callback), 700);
                 topCardFlipped = true;
             }
         });
@@ -272,6 +279,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Re-enable buttons
                 buttonsOff(false);
+                
+                // Call the callback function if provided
+                if (callback) {
+                    callback();
+                } else if (shuffleButton.shuffleCallback) {
+                    shuffleButton.shuffleCallback();
+                    shuffleButton.shuffleCallback = null; // Clear it after use
+                }
             }, alignDuration);
         }, returnTime + animationDuration);
     });
@@ -507,6 +522,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to start a new game of blackjack
     function startNewGame() {
+        console.log("Starting new game...");
+        
         // Disable admin buttons during gameplay
         dealButtonDealer.disabled = true;
         dealButtonPlayer.disabled = true;
@@ -521,31 +538,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clear existing hands
         clearHands();
         
-        // Deal cards in the proper order (alternating between player and dealer)
-        setTimeout(() => {
-            // First card to player (face up)
-            dealInitialCard(handContainerPlayer, true);
-            
-            setTimeout(() => {
-                // First card to dealer (face up)
-                dealInitialCard(handContainerDealer, true);
-                
-                setTimeout(() => {
-                    // Second card to player (face up)
-                    dealInitialCard(handContainerPlayer, true);
-                    
-                    setTimeout(() => {
-                        // Second card to dealer (face down)
-                        dealInitialCard(handContainerDealer, false);
-                        
-                        // Check for blackjack
-                        setTimeout(() => {
-                            checkInitialBlackjack();
-                        }, 700);
-                    }, 700);
-                }, 700);
-            }, 700);
-        }, 100);
+        // Set up the callback before triggering the shuffle
+        shuffleButton.shuffleCallback = dealCardsForNewGame;
+        
+        // Then trigger the shuffle
+        shuffleButton.click();
     }
     
     // Function to clear all cards from hands
@@ -806,6 +803,45 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Enable new game button
         newGameButton.disabled = false;
+    }
+
+    // Function to deal cards for a new game (after shuffle completes)
+    function dealCardsForNewGame() {
+        // Deal cards in the proper order (alternating between player and dealer)
+        setTimeout(() => {
+            // First card to player (face up)
+            dealInitialCard(handContainerPlayer, true);
+            
+            setTimeout(() => {
+                // First card to dealer (face up)
+                dealInitialCard(handContainerDealer, true);
+                
+                setTimeout(() => {
+                    // Second card to player (face up)
+                    dealInitialCard(handContainerPlayer, true);
+                    
+                    setTimeout(() => {
+                        // Second card to dealer (face down)
+                        dealInitialCard(handContainerDealer, false);
+                        
+                        // Check for blackjack
+                        setTimeout(() => {
+                            checkInitialBlackjack();
+                        }, 700);
+                    }, 700);
+                }, 700);
+            }, 700);
+        }, 100);
+    }
+
+    // Function to trigger a shuffle programmatically with a callback
+    function triggerShuffle(callback) {
+        // Create a new event
+        const event = new Event('click');
+        // Call the event listener directly with the callback
+        shuffleButton.dispatchEvent(event);
+        // Store the callback to be used when animation completes
+        shuffleButton.shuffleCallback = callback;
     }
 });
 
