@@ -33,6 +33,17 @@ h1::after {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+h2 {
+    color: #ffffff;
+    /* margin-bottom: 60px; */
+    font-family: 'Spongebob Font Wide', sans-serif;
+    font-size: 2.5em;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 1;
+}
+
 #hand-container-dealer {
     display: flex;
     flex-wrap: nowrap;
@@ -189,6 +200,32 @@ button:hover {
 button:active {
     transform: scale(0.98) translateY(0);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+#back-button {
+    margin-right: auto;
+}
+
+
+.nunito-regular {
+    font-family: "Nunito", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+.rule {
+    border: 2px solid #333;
+    padding: 10px;
+    background-color: #f9f9f9;
+    width: fit-content;
+    border-radius: 6px;
+    margin: 0 auto;
 }
 
 footer {
