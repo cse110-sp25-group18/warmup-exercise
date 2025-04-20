@@ -218,6 +218,8 @@ class GameController {
         
         // Animation logic for shuffling
         this.animateShuffle(allCards, event, callback);
+
+        // Re-enable buttons
     }
     
     /**
@@ -303,6 +305,7 @@ class GameController {
             setTimeout(() => {
                 this.performShuffle(callback);
             }, alignDuration);
+            this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
         }, returnTime);
         
     }
@@ -347,8 +350,6 @@ class GameController {
         // Re-arrange cards in stack
         this.arrangeCardsInStack();
         
-        // Re-enable buttons
-        this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
         
         // Call callback if provided
         this.executeCallback(callback);
@@ -360,7 +361,7 @@ class GameController {
      */
     dealCardToHand(target) {
         // Disable buttons during animation
-        this.setAllButtonStates(true, true, true, true);
+        this.setAllButtonStates(DISABLE, DISABLE, DISABLE, DISABLE, DISABLE, DISABLE);
         
         // Get the top card from deck
         const cardToDeal = this.systemView.getTopCard();
@@ -420,6 +421,7 @@ class GameController {
                     
                     // Re-enable buttons only if player hasn't busted
                     this.playerView.setGameActionButtonsState(ENABLE, ENABLE);
+                    this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
                 }, 300);
             }
         });
@@ -432,7 +434,7 @@ class GameController {
         console.log("Reset button clicked");
         
         // Disable buttons during operation
-        this.setAllButtonStates(true, true, true, true);
+        this.setAllButtonStates(true, true, true, true, true, true);
         
         // Get cards from both hands
         const dealerCards = this.playerView.getHandCards('dealer');
@@ -466,7 +468,7 @@ class GameController {
             this.updateCounters();
             
             // Re-enable buttons
-            this.setAllButtonStates(false, false, false, false);
+            this.setAllButtonStates(false, false, false, false, false, false);
             
             // Shuffle the deck
             this.shuffleDeck();
@@ -489,7 +491,7 @@ class GameController {
         console.log("Starting new game...");
         
         // Disable all game buttons during new game setup
-        this.setAllButtonStates(false, true, true, true, true, true);
+        this.setAllButtonStates(true, true, true, true, true, true);
         
         // Check if enough cards in deck
         if (this.systemModel.getDeckCount() < 4) {
@@ -498,13 +500,13 @@ class GameController {
             this.playerView.setPlayerButtonsState(false);
             return;
         }
-        
+
+        // Clear hands
+        this.handleReset();
+
         // Start new game in models
         this.systemModel.startNewGame();
         this.playerModel.setPlayerTurn(true);
-        
-        // Clear hands
-        this.clearHands();
         
         // Shuffle and deal initial cards
         this.systemView.adminButtons.shuffle.shuffleCallback = () => this.dealInitialCards();
