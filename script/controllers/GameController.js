@@ -430,7 +430,7 @@ class GameController {
     /**
      * Handle reset button click
      */
-    handleReset() {
+    handleReset(callback) {
         console.log("Reset button clicked");
         
         // Disable buttons during operation
@@ -443,6 +443,7 @@ class GameController {
         // If no cards in hands, nothing to reset
         if (dealerCards.length === 0 && playerCards.length === 0) {
             this.setAllButtonStates(false, false, false, false);
+            this.shuffleDeck(callback);  // call shuffle logic even if nothing was reset
             return;
         }
         
@@ -471,7 +472,7 @@ class GameController {
             this.setAllButtonStates(false, false, false, false, false, false);
             
             // Shuffle the deck
-            this.shuffleDeck();
+            this.shuffleDeck(callback);
         }, 600);
     }
     
@@ -501,16 +502,12 @@ class GameController {
             return;
         }
 
-        // Clear hands
-        this.handleReset();
-
         // Start new game in models
         this.systemModel.startNewGame();
         this.playerModel.setPlayerTurn(true);
-        
-        // Shuffle and deal initial cards
-        this.systemView.adminButtons.shuffle.shuffleCallback = () => this.dealInitialCards();
-        this.systemView.adminButtons.shuffle.click();
+
+        // Clear hands + shuffle and deal initial cards
+        this.handleReset(() => this.dealInitialCards());
     }
     
     /**
