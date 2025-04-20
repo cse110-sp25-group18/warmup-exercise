@@ -20,10 +20,8 @@ class CardController {
     setupEventListeners() {
         // Handle card click events
         this.view.addEventListener('card-click', () => {
-            // Only toggle if it's the top card
-            if (this.model.isTopCard) {
-                this.toggleCard();
-            }
+            // Card-click event only comes from top cards, so toggle it
+            this.toggleCard();
         });
     }
     
