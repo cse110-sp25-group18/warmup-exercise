@@ -31,6 +31,28 @@ class CardView extends HTMLElement {
         this.render();
     }
 
+    // Helper method to create corner elements
+    createCorner(isBottom = false) {
+        const suitSymbol = this.model.getSuitSymbol();
+        const suitClass = this.model.getSuitClass();
+        
+        const corner = document.createElement("div");
+        corner.className = isBottom ? "corner bottom" : "corner";
+
+        const value = document.createElement("div");
+        value.className = `rank ${suitClass}`;
+        value.textContent = this.model.rank;
+
+        const suit = document.createElement("div");
+        suit.className = `suit ${suitClass}`;
+        suit.textContent = suitSymbol;
+
+        corner.appendChild(value);
+        corner.appendChild(suit);
+        
+        return corner;
+    }
+
     // Update the display based on the model
     render() {
         if (!this.model) return;
@@ -53,7 +75,7 @@ class CardView extends HTMLElement {
         // Add click event to the card element inside shadow DOM
         card.addEventListener("click", (e) => {
             if (this.model.isTopCard || this.classList.contains('top-card')) {
-                console.log("Card clicked inside shadow DOM");
+                // console.log("Card clicked inside shadow DOM");
                 this.dispatchEvent(new CustomEvent('card-click', {
                     bubbles: true,
                     composed: true
@@ -75,19 +97,7 @@ class CardView extends HTMLElement {
         const suitClass = this.model.getSuitClass();
 
         // Create top corner
-        const topCorner = document.createElement("div");
-        topCorner.className = "corner";
-
-        const topValue = document.createElement("div");
-        topValue.className = `rank ${suitClass}`;
-        topValue.textContent = this.model.rank;
-
-        const topSuit = document.createElement("div");
-        topSuit.className = `suit ${suitClass}`;
-        topSuit.textContent = suitSymbol;
-
-        topCorner.appendChild(topValue);
-        topCorner.appendChild(topSuit);
+        const topCorner = this.createCorner(false);
 
         // Create center
         const center = document.createElement("div");
@@ -95,19 +105,7 @@ class CardView extends HTMLElement {
         center.textContent = suitSymbol;
 
         // Create bottom corner
-        const bottomCorner = document.createElement("div");
-        bottomCorner.className = "corner bottom";
-
-        const bottomValue = document.createElement("div");
-        bottomValue.className = `rank ${suitClass}`;
-        bottomValue.textContent = this.model.rank;
-
-        const bottomSuit = document.createElement("div");
-        bottomSuit.className = `suit ${suitClass}`;
-        bottomSuit.textContent = suitSymbol;
-
-        bottomCorner.appendChild(bottomValue);
-        bottomCorner.appendChild(bottomSuit);
+        const bottomCorner = this.createCorner(true);
 
         // Assemble card front
         cardFront.appendChild(topCorner);
@@ -156,7 +154,7 @@ class CardView extends HTMLElement {
     toggleFace() {
         const card = this.shadowRoot.querySelector('.card');
         if (card) {
-            console.log("Toggling card face");
+            // console.log("Toggling card face");
             card.classList.toggle('face-up');
         }
     }
