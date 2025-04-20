@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Only flip the top card 
         if (cards.length > 0) {
             const topCard = cards[0]; 
-            topCard.controller.toggleCard();
+            topcard.controller?.toggleCard();
         }
     });
 
@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let topCardFlipped = false;
         cardsToAnimate.forEach(card => {
             // Check if the card is face up using the controller if available
-            const isFaceUp = card.controller ? card.controller.isFaceUp() : card._isFaceUp;
+            const isFaceUp = card.controller?.isFaceUp();
             if(isFaceUp){
-                card.controller.toggleCard();
+                card.controller?.toggleCard();
                 setTimeout(handleShuffle, 700);
                 topCardFlipped = true;
             }
@@ -140,9 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Ensure all cards are face down before adding back
                 allCards.forEach(card => {
                     // Use controller if available, fallback to direct property
-                    const isFaceUp = card.controller.isFaceUp();
+                    const isFaceUp = card.controller?.isFaceUp();
                     if (isFaceUp) {
-                        card.controller.toggleCard();
+                        card.controller?.toggleCard();
                     }
                 });
                 
@@ -154,8 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Debug: Log the order of cards after shuffle
                 console.log('Cards after shuffle (top to bottom):');
                 allCards.forEach((card, index) => {
-                    const suit = card.controller.getSuit();
-                    const rank = card.controller.getRank();
+                    const suit = card.controller?.getSuit();
+                    const rank = card.controller?.getRank();
                     console.log(`${index + 1}. ${rank} of ${suit}`);
                 });
                 
@@ -249,16 +249,16 @@ document.addEventListener('DOMContentLoaded', () => {
         card.classList.remove("fade-out", "in-hand");
         
         // Ensure card is face down
-        const isFaceUp = card.controller.isFaceUp();
+        const isFaceUp = card.controller?.isFaceUp();
         if (isFaceUp) {
-            card.controller.toggleCard();
+            card.controller?.toggleCard();
         }
         
         deckContainer.appendChild(card);
         card.classList.remove("unrender");
         
-        const suit = card.controller ? card.controller.getSuit() : card.suit;
-        const rank = card.controller ? card.controller.getRank() : card.rank;
+        const suit = card.controller ? card.controller?.getSuit() : card.suit;
+        const rank = card.controller ? card.controller?.getRank() : card.rank;
         console.log("card moved back to deck:", rank, "of", suit);
     }
     
@@ -281,8 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         cards.forEach((card, index) => {
             // Set stack position using controller if available
-            card.controller.updatePosition(index, offset, cardsToShow);
-            card.controller.setAsTopCard(index === 0);
+            card.controller?.updatePosition(index, offset, cardsToShow);
+            card.controller?.setAsTopCard(index === 0);
         });
     }
     
