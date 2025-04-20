@@ -1,7 +1,5 @@
 //script.js
-import Card from "./card.js";
-
-customElements.define('card-element', Card);
+import CardFactory from "./card.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const deckContainer = document.getElementById("deck-container");
@@ -27,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Only flip the top card 
         if (cards.length > 0) {
             const topCard = cards[0]; 
-            topCard.toggle();
+            topCard.controller?.toggleCard();
         }
     });
 
@@ -46,10 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Only get visible cards for animation (max 3)
         const visibleCards = Array.from(allCards).filter(card => card.style.display !== 'none');
         const cardsToAnimate = visibleCards.slice(0, 3);
-        const topCardFlipped = false;
+        let topCardFlipped = false;
         cardsToAnimate.forEach(card => {
-            if(card._isFaceUp){
-                card.toggle();
+            // Check if the card is face up using the controller if available
+            const isFaceUp = card.controller?.isFaceUp();
+            if(isFaceUp){
+                card.controller?.toggleCard();
                 setTimeout(handleShuffle, 700);
                 topCardFlipped = true;
             }
@@ -139,8 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Ensure all cards are face down before adding back
                 allCards.forEach(card => {
-                    if (card._isFaceUp) {
-                        card.toggle();
+                    // Use controller if available, fallback to direct property
+                    const isFaceUp = card.controller?.isFaceUp();
+                    if (isFaceUp) {
+                        card.controller?.toggleCard();
                     }
                 });
                 
@@ -152,7 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Debug: Log the order of cards after shuffle
                 console.log('Cards after shuffle (top to bottom):');
                 allCards.forEach((card, index) => {
-                    console.log(`${index + 1}. ${card.rank} of ${card.suit}`);
+                    const suit = card.controller?.getSuit();
+                    const rank = card.controller?.getRank();
+                    console.log(`${index + 1}. ${rank} of ${suit}`);
                 });
                 
                 // Re-arrange cards in the stack
@@ -189,8 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             slideCardIntoHand(cardToDeal, targetHandContainer);
             // Ensure the card is face down (remove the auto-flip to face up)
-            if (cardToDeal._isFaceUp) {
-                cardToDeal.toggle();
+            const isFaceUp = cardToDeal.controller?.isFaceUp();
+            if (isFaceUp) {
+                cardToDeal.controller?.toggleCard();
             }
             arrangeCardsInStack();
             buttonsOff(false);
@@ -242,12 +247,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function returnCardToDeck(card) {
         card.classList.add("unrender");
         card.classList.remove("fade-out", "in-hand");
-        if (card._isFaceUp) {
-            card.toggle();
+        
+        // Ensure card is face down
+        const isFaceUp = card.controller?.isFaceUp();
+        if (isFaceUp) {
+            card.controller?.toggleCard();
         }
+        
         deckContainer.appendChild(card);
         card.classList.remove("unrender");
-        console.log("card moved back to deck: ", card.rank, card.suit);
+        
+        const suit = card.controller?.getSuit();
+        const rank = card.controller?.getRank();
+        console.log("card moved back to deck:", rank, "of", suit);
     }
     
     function slideCardIntoHand(card, targetHandContainer) {
@@ -268,65 +280,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardsToShow = Math.min(cards.length, 3);
         
         cards.forEach((card, index) => {
-            // Reverse the z-index logic so the first card is on top
-            card.style.zIndex = index === 0 ? 100 : (100 - index); // First card has highest z-index
-            
-            if (index < cardsToShow) {
-                // Card is one of the first three, show it with offset
-                card.style.display = 'block';
-                card.style.left = `${index * offset}px`;
-                card.style.top = `${index * offset}px`;
-                
-                // Only enable click events and hover effects on the first card (top card)
-                if (index === 0) {
-                    card.style.pointerEvents = 'auto';
-                    card.classList.add('top-card'); // Add class for hover effect
-                    card.isTopCard = true; // Set property on the card object
-                } else {
-                    card.style.pointerEvents = 'none';
-                    card.classList.remove('top-card'); // Remove class from non-top cards
-                    card.isTopCard = false; // Clear property on non-top cards
-                }
-            } else {
-                // Card beyond the first three, hide it but keep in DOM
-                card.style.display = 'none';
-                card.style.pointerEvents = 'none';
-                card.classList.remove('top-card');
-                card.isTopCard = false;
-            }
+            // Set stack position using controller if available
+            card.controller?.updatePosition(index, offset, cardsToShow);
+            card.controller?.setAsTopCard(index === 0);
         });
     }
     
     function addCard(suit, rank) {
-        const card = document.createElement('card-element');
-        card.suit = suit;
-        card.rank = rank;
+        // Use CardFactory to create a card with MVC
+        const cardController = CardFactory.createCard(suit, rank);
+        const cardElement = cardController.getElement();
+        
+        // Store reference to controller in the element for easy access
+        cardElement.controller = cardController;
         
         // Insert as the first child to make it the top card
-        // Use insertBefore with the first child or null to prepend
         const firstCard = deckContainer.firstChild;
-        deckContainer.insertBefore(card, firstCard);
+        deckContainer.insertBefore(cardElement, firstCard);
         
         // Arrange cards in a stack after adding a new card
         arrangeCardsInStack();
     }
 
-        const suits = ["hearts", "diamonds", "spades", "clubs"];
-        const ranks = [
-            "A",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "J",
-            "Q",
-            "K",
-        ];
+    const suits = ["hearts", "diamonds", "spades", "clubs"];
+    const ranks = [
+        "A",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "J",
+        "Q",
+        "K",
+    ];
     for (let suit of suits) {
         for (let rank of ranks) {
             addCard(suit, rank);
