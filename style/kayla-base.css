@@ -10,30 +10,90 @@ body {
 }
 
 h1 {
-    color: #e9eff5c7;
-    margin-bottom: 30px;
+    color: #ffffff;
+    margin-bottom: 60px;
     font-family: 'Spongebob Font Wide', sans-serif;
-}
-
-#deck-container {
+    font-size: 2.5em;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+    letter-spacing: 2px;
     position: relative;
-    width: 170px; /* Allow for card width and offset */
-    height: 230px; /* Allow for card height and offset */
-    margin: 0 auto 30px auto;
+    z-index: 1;
 }
 
-#hand-container {
+h1::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 3px;
+    background-color: #ffffff;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#hand-container-dealer {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
     min-height: 150px;
-    margin-bottom: 30px;
-    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 50px;
+    padding: 30px;
     /* background-color: #468666; */
     background-color: #6F4E37;
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+#deck-container {
+    position: relative;
+    width: 170px;
+    height: 230px;
+    margin: 0 auto 50px auto;
+}
+
+#hand-container-player {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    min-height: 150px;
+    margin-bottom: 50px;
+    padding: 30px;
+    /* background-color: #468666; */
+    background-color: #6F4E37;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+/* Add a title to each hand */
+#hand-container-dealer::before {
+    content: "Dealer";
+    color: white;
+    font-family: 'Spongebob Font Wide', sans-serif;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -35px;
+    font-size: 22px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#hand-container-player::before {
+    content: "Player";
+    color: white;
+    font-family: 'Spongebob Font Wide', sans-serif;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -35px;
+    font-size: 22px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .card-container {
@@ -69,41 +129,50 @@ h1 {
 
 #card-counter-container {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #fafdff;
+    top: 15px;
+    left: 15px;
+    background-color: rgba(250, 253, 255, 0.9);
     border-radius: 10px;
-    padding: 10px;
+    padding: 12px 15px;
     font-family: 'Spongebob Font Wide', sans-serif;
     font-size: 16px;
     color: rgb(5, 0, 0);
-    border: none;
+    border: 2px solid #000;
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+#card-counter {
+    font-weight: bold;
+    color: #0056b3;
 }
 
 button {
-    padding: 10px 20px;
-    margin: 10px;
+    padding: 12px 24px;
+    margin: 15px;
     font-family: 'Spongebob Font Wide', sans-serif;
     font-size: 16px;
     background-color: #fafdff;
     color: rgb(5, 0, 0);
-    border:none;
+    border: none;
     border: black;
     border-style: solid;
     border-width: 2px;
     border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
     background-color: #a7a8a9;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 button:active {
-    transform: scale(0.98);
+    transform: scale(0.98) translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 footer {

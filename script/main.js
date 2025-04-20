@@ -5,14 +5,17 @@ customElements.define('card-element', Card);
 
 document.addEventListener('DOMContentLoaded', () => {
     const deckContainer = document.getElementById("deck-container");
-    const handContainer = document.getElementById("hand-container");
+    const handContainerDealer = document.getElementById("hand-container-dealer");
+    const handContainerPlayer = document.getElementById("hand-container-player");
 
     const flipButton = document.getElementById("flip-button");
     const shuffleButton = document.getElementById("shuffle-button");
-    const dealButton = document.getElementById("deal-button");
+    const dealButtonDealer = document.getElementById("deal-button-dealer");
+    const dealButtonPlayer = document.getElementById("deal-button-player");
     const resetButton = document.getElementById("reset-button");
     function buttonsOff(value){
-        dealButton.disabled = value;
+        dealButtonDealer.disabled = value;
+        dealButtonPlayer.disabled = value;
         flipButton.disabled = value;
         shuffleButton.disabled = value;
         resetButton.disabled = value;
@@ -161,69 +164,101 @@ document.addEventListener('DOMContentLoaded', () => {
         }, returnTime + animationDuration);
     });
 
-    dealButton.addEventListener("click", function () {
+    dealButtonDealer.addEventListener("click", function () {
+        dealCardToHand(handContainerDealer);
+    });
+
+    dealButtonPlayer.addEventListener("click", function () {
+        dealCardToHand(handContainerPlayer);
+    });
+
+    function dealCardToHand(targetHandContainer) {
         buttonsOff(true);
 
         //extract first card
         const allCards = deckContainer.querySelectorAll('card-element');
+        if (allCards.length === 0) {
+            buttonsOff(false);
+            return;
+        }
+        
         const cardToDeal = allCards[0];
         
         cardToDeal.classList.add("fade-out");
         // fade out card from deck
         setTimeout(() => {
-            slideCardIntoHand(cardToDeal);
-            if (!cardToDeal._isFaceUp) {
+            slideCardIntoHand(cardToDeal, targetHandContainer);
+            // Ensure the card is face down (remove the auto-flip to face up)
+            if (cardToDeal._isFaceUp) {
                 cardToDeal.toggle();
             }
             arrangeCardsInStack();
             buttonsOff(false);
         }, 600);
-    });
+    }
 
     resetButton.addEventListener("click", function () {
         console.log("Reset button clicked");
         buttonsOff(true);
         
-        const cardsInHand = handContainer.querySelectorAll('card-element');
+        // Get cards from both hands
+        const cardsInHandDealer = handContainerDealer.querySelectorAll('card-element');
+        const cardsInHandPlayer = handContainerPlayer.querySelectorAll('card-element');
         
-        if (cardsInHand.length === 0) {
+        if (cardsInHandDealer.length === 0 && cardsInHandPlayer.length === 0) {
             buttonsOff(false);
             return;
         }
         
-        cardsInHand.forEach(card => {
+        // Process cards from dealer's hand
+        cardsInHandDealer.forEach(card => {
             card.classList.remove("fade-in");
             card.classList.add("fade-out");
         });
         
+        // Process cards from player's hand
+        cardsInHandPlayer.forEach(card => {
+            card.classList.remove("fade-in");
+            card.classList.add("fade-out");
+        });
+
         setTimeout(() => {
-            cardsInHand.forEach(card => {
-                card.classList.add("unrender");
-                card.classList.remove("fade-out", "in-hand");
-                if (card._isFaceUp) {
-                    card.toggle();
-                }
-                deckContainer.appendChild(card);
-                card.classList.remove("unrender");
-                console.log("card moved back to deck: ", card.rank, card.suit);
+            // Return cards from dealer's hand
+            cardsInHandDealer.forEach(card => {
+                returnCardToDeck(card);
+            });
+            
+            // Return cards from player's hand
+            cardsInHandPlayer.forEach(card => {
+                returnCardToDeck(card);
             });
             
             arrangeCardsInStack();
             buttonsOff(false);
             shuffleButton.click();
-
         }, 600);
     });
-    function slideCardIntoHand(card) {
+
+    function returnCardToDeck(card) {
+        card.classList.add("unrender");
+        card.classList.remove("fade-out", "in-hand");
+        if (card._isFaceUp) {
+            card.toggle();
+        }
+        deckContainer.appendChild(card);
+        card.classList.remove("unrender");
+        console.log("card moved back to deck: ", card.rank, card.suit);
+    }
+    
+    function slideCardIntoHand(card, targetHandContainer) {
         card.classList.add("in-hand", "unrender");
-        handContainer.appendChild(card);  // add to the DOM
+        targetHandContainer.appendChild(card);  // add to the DOM
         card.classList.add("fade-in");
         card.classList.remove("unrender");
-
     }
 
     console.log("script loaded");
-    
+
     // Function to arrange cards in a stacked layout
     function arrangeCardsInStack() {
         const cards = deckContainer.querySelectorAll('card-element');
