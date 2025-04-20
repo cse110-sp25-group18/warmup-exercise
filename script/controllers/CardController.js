@@ -29,13 +29,13 @@ class CardController {
     
     disableClick() {
         this.view.removeEventListener('card-click', this.clickHandler);
-        console.log(`Card ${this.model.suit} ${this.model.rank} click disabled`);
+        // console.log(`Card ${this.model.suit} ${this.model.rank} click disabled`);
     }
     
     enableClick() {
         this.view.removeEventListener('card-click', this.clickHandler);
         this.view.addEventListener('card-click', this.clickHandler);
-        console.log(`Card ${this.model.suit} ${this.model.rank} click enabled`);
+        // console.log(`Card ${this.model.suit} ${this.model.rank} click enabled`);
     }
     
     // Update model and view when toggling the card
@@ -46,7 +46,7 @@ class CardController {
         // Update the view
         this.view.toggleFace();
         
-        console.log("Card toggled:", this.model.isFaceUp ? "face-up" : "face-down");
+        // console.log("Card toggled:", this.model.isFaceUp ? "face-up" : "face-down");
     }
     
     // Set this card as the top card in the stack

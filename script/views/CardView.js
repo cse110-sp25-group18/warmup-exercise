@@ -53,7 +53,7 @@ class CardView extends HTMLElement {
         // Add click event to the card element inside shadow DOM
         card.addEventListener("click", (e) => {
             if (this.model.isTopCard || this.classList.contains('top-card')) {
-                console.log("Card clicked inside shadow DOM");
+                // console.log("Card clicked inside shadow DOM");
                 this.dispatchEvent(new CustomEvent('card-click', {
                     bubbles: true,
                     composed: true
@@ -156,7 +156,7 @@ class CardView extends HTMLElement {
     toggleFace() {
         const card = this.shadowRoot.querySelector('.card');
         if (card) {
-            console.log("Toggling card face");
+            // console.log("Toggling card face");
             card.classList.toggle('face-up');
         }
     }
