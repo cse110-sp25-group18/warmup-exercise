@@ -5,17 +5,17 @@ customElements.define('card-element', Card);
 
 document.addEventListener('DOMContentLoaded', () => {
     const deckContainer = document.getElementById("deck-container");
-    const handContainer1 = document.getElementById("hand-container-1");
-    const handContainer2 = document.getElementById("hand-container-2");
+    const handContainerDealer = document.getElementById("hand-container-dealer");
+    const handContainerPlayer = document.getElementById("hand-container-player");
 
     const flipButton = document.getElementById("flip-button");
     const shuffleButton = document.getElementById("shuffle-button");
-    const dealButton1 = document.getElementById("deal-button-1");
-    const dealButton2 = document.getElementById("deal-button-2");
+    const dealButtonDealer = document.getElementById("deal-button-dealer");
+    const dealButtonPlayer = document.getElementById("deal-button-player");
     const resetButton = document.getElementById("reset-button");
     function buttonsOff(value){
-        dealButton1.disabled = value;
-        dealButton2.disabled = value;
+        dealButtonDealer.disabled = value;
+        dealButtonPlayer.disabled = value;
         flipButton.disabled = value;
         shuffleButton.disabled = value;
         resetButton.disabled = value;
@@ -164,12 +164,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }, returnTime + animationDuration);
     });
 
-    dealButton1.addEventListener("click", function () {
-        dealCardToHand(handContainer1);
+    dealButtonDealer.addEventListener("click", function () {
+        dealCardToHand(handContainerDealer);
     });
 
-    dealButton2.addEventListener("click", function () {
-        dealCardToHand(handContainer2);
+    dealButtonPlayer.addEventListener("click", function () {
+        dealCardToHand(handContainerPlayer);
     });
 
     function dealCardToHand(targetHandContainer) {
@@ -202,34 +202,34 @@ document.addEventListener('DOMContentLoaded', () => {
         buttonsOff(true);
         
         // Get cards from both hands
-        const cardsInHand1 = handContainer1.querySelectorAll('card-element');
-        const cardsInHand2 = handContainer2.querySelectorAll('card-element');
+        const cardsInHandDealer = handContainerDealer.querySelectorAll('card-element');
+        const cardsInHandPlayer = handContainerPlayer.querySelectorAll('card-element');
         
-        if (cardsInHand1.length === 0 && cardsInHand2.length === 0) {
+        if (cardsInHandDealer.length === 0 && cardsInHandPlayer.length === 0) {
             buttonsOff(false);
             return;
         }
         
-        // Process cards from hand 1
-        cardsInHand1.forEach(card => {
+        // Process cards from dealer's hand
+        cardsInHandDealer.forEach(card => {
             card.classList.remove("fade-in");
             card.classList.add("fade-out");
         });
         
-        // Process cards from hand 2
-        cardsInHand2.forEach(card => {
+        // Process cards from player's hand
+        cardsInHandPlayer.forEach(card => {
             card.classList.remove("fade-in");
             card.classList.add("fade-out");
         });
-        
+
         setTimeout(() => {
-            // Return cards from hand 1
-            cardsInHand1.forEach(card => {
+            // Return cards from dealer's hand
+            cardsInHandDealer.forEach(card => {
                 returnCardToDeck(card);
             });
             
-            // Return cards from hand 2
-            cardsInHand2.forEach(card => {
+            // Return cards from player's hand
+            cardsInHandPlayer.forEach(card => {
                 returnCardToDeck(card);
             });
             
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     console.log("script loaded");
-    
+
     // Function to arrange cards in a stacked layout
     function arrangeCardsInStack() {
         const cards = deckContainer.querySelectorAll('card-element');

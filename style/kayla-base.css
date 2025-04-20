@@ -22,7 +22,7 @@ h1 {
     margin: 0 auto 30px auto;
 }
 
-#hand-container-1, #hand-container-2 {
+#hand-container-dealer, #hand-container-player {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -37,21 +37,21 @@ h1 {
 }
 
 /* Add a title to each hand */
-#hand-container-1::before {
+#hand-container-dealer::before {
     content: "Dealer";
     color: white;
     font-family: 'Spongebob Font Wide', sans-serif;
     position: absolute;
-    margin-top: -30px;
+    margin-top: -45px;
     font-size: 18px;
 }
 
-#hand-container-2::before {
+#hand-container-player::before {
     content: "Player";
     color: white;
     font-family: 'Spongebob Font Wide', sans-serif;
     position: absolute;
-    margin-top: -30px;
+    margin-top: -45px;
     font-size: 18px;
 }
 
