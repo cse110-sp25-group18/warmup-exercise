@@ -42,7 +42,7 @@ class CardFactory {
      */
     static createElement(suit, rank) {
         const controller = this.createCard(suit, rank);
-        return controller.getElement();
+        return controller?.getElement();
     }
 }
 

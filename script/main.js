@@ -193,9 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             slideCardIntoHand(cardToDeal, targetHandContainer);
             // Ensure the card is face down (remove the auto-flip to face up)
-            const isFaceUp = cardToDeal.controller.isFaceUp();
+            const isFaceUp = cardToDeal.controller?.isFaceUp();
             if (isFaceUp) {
-                cardToDeal.controller.toggleCard();
+                cardToDeal.controller?.toggleCard();
             }
             arrangeCardsInStack();
             buttonsOff(false);
