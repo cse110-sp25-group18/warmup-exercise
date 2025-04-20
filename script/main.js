@@ -11,11 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerScoreElement = document.getElementById("player-score");
     const cardCounterElement = document.getElementById("card-counter");
 
+    // Button elements
     const flipButton = document.getElementById("flip-button");
     const shuffleButton = document.getElementById("shuffle-button");
     const dealButtonDealer = document.getElementById("deal-button-dealer");
     const dealButtonPlayer = document.getElementById("deal-button-player");
     const resetButton = document.getElementById("reset-button");
+    
+    // Blackjack game buttons
+    const newGameButton = document.getElementById("new-game-button");
+    const hitButton = document.getElementById("hit-button");
+    const standButton = document.getElementById("stand-button");
+    
+    // Initialize game buttons as disabled
+    hitButton.disabled = true;
+    standButton.disabled = true;
 
     // Blackjack game functions
     function getCardValue(card) {
@@ -97,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         flipButton.disabled = value;
         shuffleButton.disabled = value;
         resetButton.disabled = value;
+        newGameButton.disabled = value;
     }
 
     flipButton.addEventListener("click", function () {
@@ -442,5 +453,18 @@ document.addEventListener('DOMContentLoaded', () => {
     updateHandValues();
     
     shuffleButton.click();
+
+    // Event listeners for the game buttons (to be implemented later)
+    newGameButton.addEventListener("click", function() {
+        console.log("New Game button clicked - functionality to be implemented");
+    });
+    
+    hitButton.addEventListener("click", function() {
+        console.log("Hit button clicked - functionality to be implemented");
+    });
+    
+    standButton.addEventListener("click", function() {
+        console.log("Stand button clicked - functionality to be implemented");
+    });
 });
 
