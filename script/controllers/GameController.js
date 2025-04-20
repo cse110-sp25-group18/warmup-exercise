@@ -207,11 +207,11 @@ class GameController {
         console.log("Shuffle button clicked");
         
         // Disable buttons during animation
-        this.setAllButtonStates(true, true, true, true);
+        this.setAllButtonStates(DISABLE, DISABLE, DISABLE, DISABLE, DISABLE, DISABLE);
         
         const allCards = this.systemView.getDeckCards();
         if (allCards.length < 1) {
-            this.setAllButtonStates(false, false, false, false);
+            this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE);
             this.executeCallback(callback);
             return;
         }
@@ -304,6 +304,7 @@ class GameController {
                 this.performShuffle(callback);
             }, alignDuration);
         }, returnTime);
+        
     }
     
     /**
@@ -347,7 +348,7 @@ class GameController {
         this.arrangeCardsInStack();
         
         // Re-enable buttons
-        this.setAllButtonStates(false, false, false, false);
+        this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
         
         // Call callback if provided
         this.executeCallback(callback);

@@ -21,9 +21,6 @@ class SystemModel {
         let sum = 0;
         let aceCount = 0;
         
-        // 记录手牌组成以便调试
-        const cardValues = [];
-        
         // Calculate all card values
         cards.forEach(card => {
             const rank = card.controller?.getRank();
@@ -39,28 +36,12 @@ class SystemModel {
             }
             
             sum += value;
-            cardValues.push({rank, value});
         });
-        
-        // 记录原始计算值
-        const originalSum = sum;
-        const originalAceCount = aceCount;
         
         // Adjust for aces if needed (change from 11 to 1)
         while (sum > 21 && aceCount > 0) {
             sum -= 10;
             aceCount--;
-        }
-        
-        // 如果手牌中有Ace且总值接近21，记录详细信息
-        if (originalAceCount > 0 && (originalSum >= 17 || sum >= 17)) {
-            console.log(`Hand calculation details: 
-            Cards: ${cardValues.map(c => c.rank).join(', ')}
-            Original values: ${cardValues.map(c => c.value).join(', ')}
-            Original sum: ${originalSum}
-            Aces: ${originalAceCount}
-            Final sum after ace adjustment: ${sum}
-            Remaining aces as 11: ${aceCount}`);
         }
         
         return sum;
@@ -73,23 +54,9 @@ class SystemModel {
      */
     evaluateHand(cards) {
         const value = this.calculateHandValue(cards);
-        
-        // 黑杰克需要满足两个条件：只有两张牌，总值为21
-        const isBlackjack = cards.length === 2 && value === 21;
-        
-        if (isBlackjack) {
-            console.log("Found Blackjack! Cards:", cards.length, "Value:", value);
-            // 打印出牌面信息以便于调试
-            cards.forEach((card, index) => {
-                const rank = card.controller?.getRank();
-                const suit = card.controller?.getSuit();
-                console.log(`Card ${index+1}: ${rank} of ${suit}`);
-            });
-        }
-        
         return {
             value,
-            isBlackjack,
+            isBlackjack: cards.length === 2 && value === 21,
             isBust: value > 21
         };
     }

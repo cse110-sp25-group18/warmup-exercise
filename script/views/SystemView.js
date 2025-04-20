@@ -73,16 +73,15 @@ class SystemView {
         let text = value.toString();
         
         if (isBlackjack) {
-            text += " (Blackjack! ♣️♥️)";
-            console.log(`Formatting with blackjack: ${text}`);
+            text += " (Blackjack♣️♥️!)";
         } else if (isBust) {
-            text += " (Bust)";
+            text += " (Bust💥)";
         }
         
         if (isWinner) {
             text += " ✅ Winner!";
         } else if (isTie) {
-            text += " (Tie)";
+            text += " (Tie🤝)";
         }
         
         return text;
@@ -142,10 +141,6 @@ class SystemView {
      * @param {boolean} allDealerCardsVisible - Whether all dealer cards are visible
      */
     updateScores(dealerValue, playerValue, dealerBlackjack, dealerBust, playerBlackjack, playerBust, allDealerCardsVisible) {
-        // Log the inputs for debugging
-        console.log(`Updating scores - Player: ${playerValue} (Blackjack: ${playerBlackjack}, Bust: ${playerBust})`);
-        console.log(`Updating scores - Dealer: ${dealerValue} (Blackjack: ${dealerBlackjack}, Bust: ${dealerBust}, Visible: ${allDealerCardsVisible})`);
-        
         // Update player score (always visible)
         this.playerScoreElement.textContent = this.formatHandStatus(
             playerValue, 
@@ -167,10 +162,6 @@ class SystemView {
         } else {
             this.dealerScoreElement.textContent = dealerValue;
         }
-        
-        // Log the final displayed texts for debugging
-        console.log(`Display - Player score: "${this.playerScoreElement.textContent}"`);
-        console.log(`Display - Dealer score: "${this.dealerScoreElement.textContent}"`);
     }
     
     /**
