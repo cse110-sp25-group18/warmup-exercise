@@ -38,7 +38,7 @@ place your link here:
 
 ## Things you need to know
 
-Please ensure that you have read the document [here](https://github.com/cse110-sp25-group18/cse110-sp25-group18?tab=readme-ov-file#general-development-workflow)
+Please ensure that you have read the document [here](https://cse110-sp25-group18.github.io/guides/workflow/)
 
 /assign me
 

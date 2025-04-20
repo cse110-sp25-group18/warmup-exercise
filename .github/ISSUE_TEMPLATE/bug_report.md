@@ -36,3 +36,6 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+**Things you need to know**
+Please ensure that you have read the document [here](https://cse110-sp25-group18.github.io/guides/workflow/)
