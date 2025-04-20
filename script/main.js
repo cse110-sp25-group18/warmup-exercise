@@ -11,13 +11,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const dealButtonDealer = document.getElementById("deal-button-dealer");
     const dealButtonPlayer = document.getElementById("deal-button-player");
     const resetButton = document.getElementById("reset-button");
+    const rulesButton = document.getElementById("rules-button");
+    
     function buttonsOff(value){
         dealButtonDealer.disabled = value;
         dealButtonPlayer.disabled = value;
         flipButton.disabled = value;
         shuffleButton.disabled = value;
         resetButton.disabled = value;
+        rulesButton.disabled = value;
     }
+
+    rulesButton.addEventListener("click", function () {
+        console.log("Rules button clicked");
+
+        window.location.href = "rules.html";
+    });
 
     flipButton.addEventListener("click", function () {
         console.log("Flip button clicked");
