@@ -7,12 +7,90 @@ document.addEventListener('DOMContentLoaded', () => {
     const deckContainer = document.getElementById("deck-container");
     const handContainerDealer = document.getElementById("hand-container-dealer");
     const handContainerPlayer = document.getElementById("hand-container-player");
+    const dealerScoreElement = document.getElementById("dealer-score");
+    const playerScoreElement = document.getElementById("player-score");
+    const cardCounterElement = document.getElementById("card-counter");
 
     const flipButton = document.getElementById("flip-button");
     const shuffleButton = document.getElementById("shuffle-button");
     const dealButtonDealer = document.getElementById("deal-button-dealer");
     const dealButtonPlayer = document.getElementById("deal-button-player");
     const resetButton = document.getElementById("reset-button");
+
+    // Blackjack game functions
+    function getCardValue(card) {
+        if (card.rank === "A") return 11;  // Ace initially counts as 11
+        if (["K", "Q", "J"].includes(card.rank)) return 10;
+        return parseInt(card.rank);
+    }
+
+    function calculateHandValue(cards) {
+        let sum = 0;
+        let aceCount = 0;
+        
+        // Sum all card values
+        cards.forEach(card => {
+            const value = getCardValue(card);
+            sum += value;
+            
+            // Count aces for later adjustment if needed
+            if (card.rank === "A") {
+                aceCount++;
+            }
+        });
+        
+        // Adjust for aces if needed (change from 11 to 1)
+        while (sum > 21 && aceCount > 0) {
+            sum -= 10;  // Convert one ace from 11 to 1
+            aceCount--;
+        }
+        
+        return sum;
+    }
+
+    function checkBlackjack(handContainer) {
+        const cards = handContainer.querySelectorAll('card-element');
+        // Blackjack is 21 points with exactly 2 cards
+        return cards.length === 2 && calculateHandValue(Array.from(cards)) === 21;
+    }
+    
+    function checkBust(handContainer) {
+        const cards = handContainer.querySelectorAll('card-element');
+        // Bust is over 21 points
+        return calculateHandValue(Array.from(cards)) > 21;
+    }
+
+    function updateHandValues() {
+        // Calculate and update dealer's score
+        const dealerCards = handContainerDealer.querySelectorAll('card-element');
+        const dealerValue = calculateHandValue(Array.from(dealerCards));
+        dealerScoreElement.textContent = dealerValue;
+        
+        // Add indicators for blackjack or bust
+        if (checkBlackjack(handContainerDealer)) {
+            dealerScoreElement.textContent = dealerValue + " (Blackjack!)";
+        } else if (checkBust(handContainerDealer)) {
+            dealerScoreElement.textContent = dealerValue + " (Bust)";
+        }
+        
+        // Calculate and update player's score
+        const playerCards = handContainerPlayer.querySelectorAll('card-element');
+        const playerValue = calculateHandValue(Array.from(playerCards));
+        playerScoreElement.textContent = playerValue;
+        
+        // Add indicators for blackjack or bust
+        if (checkBlackjack(handContainerPlayer)) {
+            playerScoreElement.textContent = playerValue + " (Blackjack!)";
+        } else if (checkBust(handContainerPlayer)) {
+            playerScoreElement.textContent = playerValue + " (Bust)";
+        }
+    }
+
+    function updateCardCounter() {
+        const deckCount = deckContainer.querySelectorAll('card-element').length;
+        cardCounterElement.textContent = deckCount;
+    }
+
     function buttonsOff(value){
         dealButtonDealer.disabled = value;
         dealButtonPlayer.disabled = value;
@@ -28,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cards.length > 0) {
             const topCard = cards[0]; 
             topCard.toggle();
+            // Update scores since flipping a dealer's card would change the visible score
+            updateHandValues();
         }
     });
 
@@ -188,11 +268,33 @@ document.addEventListener('DOMContentLoaded', () => {
         // fade out card from deck
         setTimeout(() => {
             slideCardIntoHand(cardToDeal, targetHandContainer);
-            // Ensure the card is face down (remove the auto-flip to face up)
-            if (cardToDeal._isFaceUp) {
-                cardToDeal.toggle();
+            
+            // For blackjack: 
+            // - Player cards always face up
+            // - Dealer's first card face up, others face down
+            if (targetHandContainer === handContainerPlayer) {
+                // For player, flip card face up if it's face down
+                if (!cardToDeal._isFaceUp) {
+                    cardToDeal.toggle();
+                }
+            } else if (targetHandContainer === handContainerDealer) {
+                // For dealer, first card face up, others face down
+                const dealerCards = handContainerDealer.querySelectorAll('card-element');
+                if (dealerCards.length === 1) { // This is the first card
+                    if (!cardToDeal._isFaceUp) {
+                        cardToDeal.toggle();
+                    }
+                } else {
+                    // Subsequent cards stay face down
+                    if (cardToDeal._isFaceUp) {
+                        cardToDeal.toggle();
+                    }
+                }
             }
+            
             arrangeCardsInStack();
+            updateHandValues();
+            updateCardCounter();
             buttonsOff(false);
         }, 600);
     }
@@ -234,6 +336,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             arrangeCardsInStack();
+            updateHandValues();
+            updateCardCounter();
             buttonsOff(false);
             shuffleButton.click();
         }, 600);
@@ -311,28 +415,32 @@ document.addEventListener('DOMContentLoaded', () => {
         arrangeCardsInStack();
     }
 
-        const suits = ["hearts", "diamonds", "spades", "clubs"];
-        const ranks = [
-            "A",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "J",
-            "Q",
-            "K",
-        ];
+    const suits = ["hearts", "diamonds", "spades", "clubs"];
+    const ranks = [
+        "A",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "J",
+        "Q",
+        "K",
+    ];
     for (let suit of suits) {
         for (let rank of ranks) {
             addCard(suit, rank);
         }
     }
 
+    // Initialize counters
+    updateCardCounter();
+    updateHandValues();
+    
     shuffleButton.click();
 });
 
