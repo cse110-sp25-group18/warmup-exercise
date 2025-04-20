@@ -1,0 +1,42 @@
+body {
+    font-family: 'Spongebob Font Condensed', sans-serif;
+    color: blue;
+    margin: 1rem;
+    padding: 0;
+}
+
+h1 {
+    font-size: 3rem;
+    text-align: center;
+    text-shadow: 2px 2px 4px gray;
+}
+
+h2 {
+    font-size: 2rem;
+    color: yellow;
+    text-shadow: 2px 2px 4px gray;
+}
+
+p {
+    font-size: 1.1rem;
+    color: black;
+}
+
+#back-button {
+    font-size: 1rem;
+    background-color: yellow;
+    text-shadow: 2px 2px 4px gray;
+    border: solid;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#back-button:hover {
+    background-color: yellow;
+}
+
+#back-button:active{
+    size:0.5rem;
+    transform: scale(0.8);
+    background-color: goldenrod;
+}
