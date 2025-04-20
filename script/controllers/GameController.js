@@ -31,6 +31,24 @@ class GameController {
     }
     
     /**
+     * Set all button states at once
+     * @param {boolean} adminDisabled - Whether admin buttons should be disabled
+     * @param {boolean} dealerDisabled - Whether dealer buttons should be disabled
+     * @param {boolean} playerDisabled - Whether player buttons should be disabled
+     * @param {boolean} gameDisabled - Whether game buttons should be disabled
+     * @param {boolean} hitDisabled - Whether hit button should be disabled
+     * @param {boolean} standDisabled - Whether stand button should be disabled
+     */
+    setAllButtonStates(adminDisabled = false, dealerDisabled = false, playerDisabled = false, 
+                      gameDisabled = false, hitDisabled = true, standDisabled = true) {
+        this.systemView.setAdminButtonsState(adminDisabled);
+        this.playerView.setDealerButtonsState(dealerDisabled);
+        this.playerView.setPlayerButtonsState(playerDisabled);
+        this.systemView.setNewGameButtonState(gameDisabled);
+        this.playerView.setGameActionButtonsState(hitDisabled, standDisabled);
+    }
+    
+    /**
      * Initialize the game with a deck of cards
      */
     initializeGame() {
@@ -168,6 +186,19 @@ class GameController {
     }
     
     /**
+     * Check and execute callback if provided
+     * @param {Function} callback - Optional callback to execute
+     */
+    executeCallback(callback) {
+        if (callback) {
+            callback();
+        } else if (this.systemView.adminButtons.shuffle.shuffleCallback) {
+            this.systemView.adminButtons.shuffle.shuffleCallback();
+            this.systemView.adminButtons.shuffle.shuffleCallback = null;
+        }
+    }
+    
+    /**
      * Handle shuffling the deck
      * @param {Event} event - Click event
      * @param {Function} callback - Optional callback after shuffle
@@ -176,25 +207,12 @@ class GameController {
         console.log("Shuffle button clicked");
         
         // Disable buttons during animation
-        this.systemView.setAdminButtonsState(true);
-        this.playerView.setDealerButtonsState(true);
-        this.playerView.setPlayerButtonsState(true);
-        this.systemView.setNewGameButtonState(true); // Also disable New Game button
+        this.setAllButtonStates(true, true, true, true);
         
         const allCards = this.systemView.getDeckCards();
         if (allCards.length < 1) {
-            this.systemView.setAdminButtonsState(false);
-            this.playerView.setDealerButtonsState(false);
-            this.playerView.setPlayerButtonsState(false);
-            this.systemView.setNewGameButtonState(false); // Re-enable New Game button
-            
-            // Execute callback if provided
-            if (callback) {
-                callback();
-            } else if (this.systemView.shuffleButton.shuffleCallback) {
-                this.systemView.shuffleButton.shuffleCallback();
-                this.systemView.shuffleButton.shuffleCallback = null;
-            }
+            this.setAllButtonStates(false, false, false, false);
+            this.executeCallback(callback);
             return;
         }
         
@@ -214,6 +232,7 @@ class GameController {
         const cardsToAnimate = visibleCards.slice(0, 3);
         let topCardFlipped = false;
         
+        // First flip any face-up cards
         cardsToAnimate.forEach(card => {
             if(card.controller?.isFaceUp()){
                 card.controller?.disableClick();
@@ -328,18 +347,10 @@ class GameController {
         this.arrangeCardsInStack();
         
         // Re-enable buttons
-        this.systemView.setAdminButtonsState(false);
-        this.playerView.setDealerButtonsState(false);
-        this.playerView.setPlayerButtonsState(false);
-        this.systemView.setNewGameButtonState(false); // Re-enable New Game button
+        this.setAllButtonStates(false, false, false, false);
         
         // Call callback if provided
-        if (callback) {
-            callback();
-        } else if (this.systemView.shuffleButton.shuffleCallback) {
-            this.systemView.shuffleButton.shuffleCallback();
-            this.systemView.shuffleButton.shuffleCallback = null;
-        }
+        this.executeCallback(callback);
     }
     
     /**
@@ -348,18 +359,12 @@ class GameController {
      */
     dealCardToHand(target) {
         // Disable buttons during animation
-        this.systemView.setAdminButtonsState(true);
-        this.playerView.setDealerButtonsState(true);
-        this.playerView.setPlayerButtonsState(true);
-        this.systemView.setNewGameButtonState(true); // Disable New Game button
+        this.setAllButtonStates(true, true, true, true);
         
         // Get the top card from deck
         const cardToDeal = this.systemView.getTopCard();
         if (!cardToDeal) {
-            this.systemView.setAdminButtonsState(false);
-            this.playerView.setDealerButtonsState(false);
-            this.playerView.setPlayerButtonsState(false);
-            this.systemView.setNewGameButtonState(false); // Re-enable New Game button
+            this.setAllButtonStates(false, false, false, false);
             return;
         }
         
@@ -398,10 +403,7 @@ class GameController {
             this.updateCounters();
             
             // Re-enable buttons
-            this.systemView.setAdminButtonsState(false);
-            this.playerView.setDealerButtonsState(false);
-            this.playerView.setPlayerButtonsState(false);
-            this.systemView.setNewGameButtonState(false); // Re-enable New Game button
+            this.setAllButtonStates(false, false, false, false);
             
             if (target === 'player') {
                 setTimeout(() => {
@@ -429,10 +431,7 @@ class GameController {
         console.log("Reset button clicked");
         
         // Disable buttons during operation
-        this.systemView.setAdminButtonsState(true);
-        this.playerView.setDealerButtonsState(true);
-        this.playerView.setPlayerButtonsState(true);
-        this.systemView.setNewGameButtonState(true); // Disable New Game button
+        this.setAllButtonStates(true, true, true, true);
         
         // Get cards from both hands
         const dealerCards = this.playerView.getHandCards('dealer');
@@ -440,9 +439,7 @@ class GameController {
         
         // If no cards in hands, nothing to reset
         if (dealerCards.length === 0 && playerCards.length === 0) {
-            this.systemView.setAdminButtonsState(false);
-            this.playerView.setDealerButtonsState(false);
-            this.playerView.setPlayerButtonsState(false);
+            this.setAllButtonStates(false, false, false, false);
             return;
         }
         
@@ -460,11 +457,7 @@ class GameController {
             this.playerModel.clearHands();
             
             // Return cards in view
-            dealerCards.forEach(card => {
-                this.systemView.returnCardToDeck(card);
-            });
-            
-            playerCards.forEach(card => {
+            [...dealerCards, ...playerCards].forEach(card => {
                 this.systemView.returnCardToDeck(card);
             });
             
@@ -472,10 +465,7 @@ class GameController {
             this.updateCounters();
             
             // Re-enable buttons
-            this.systemView.setAdminButtonsState(false);
-            this.playerView.setDealerButtonsState(false);
-            this.playerView.setPlayerButtonsState(false);
-            this.systemView.setNewGameButtonState(false); // Re-enable New Game button
+            this.setAllButtonStates(false, false, false, false);
             
             // Shuffle the deck
             this.shuffleDeck();
@@ -487,8 +477,8 @@ class GameController {
      * @param {Function} callback - Function to call after shuffle
      */
     shuffleDeck(callback) {
-        this.systemView.shuffleButton.shuffleCallback = callback;
-        this.systemView.shuffleButton.click();
+        this.systemView.adminButtons.shuffle.shuffleCallback = callback;
+        this.systemView.adminButtons.shuffle.click();
     }
     
     /**
@@ -498,9 +488,7 @@ class GameController {
         console.log("Starting new game...");
         
         // Disable all game buttons during new game setup
-        this.playerView.setDealerButtonsState(DISABLE);
-        this.playerView.setPlayerButtonsState(DISABLE);
-        this.playerView.setGameActionButtonsState(DISABLE, DISABLE); // Disable hit and stand buttons
+        this.setAllButtonStates(false, true, true, true, true, true);
         
         // Check if enough cards in deck
         if (this.systemModel.getDeckCount() < 4) {
@@ -518,8 +506,8 @@ class GameController {
         this.clearHands();
         
         // Shuffle and deal initial cards
-        this.systemView.shuffleButton.shuffleCallback = () => this.dealInitialCards();
-        this.systemView.shuffleButton.click();
+        this.systemView.adminButtons.shuffle.shuffleCallback = () => this.dealInitialCards();
+        this.systemView.adminButtons.shuffle.click();
     }
     
     /**
@@ -531,11 +519,7 @@ class GameController {
         const playerCards = this.playerView.getHandCards('player');
         
         // Return cards to deck in view
-        dealerCards.forEach(card => {
-            this.systemView.returnCardToDeck(card);
-        });
-        
-        playerCards.forEach(card => {
+        [...dealerCards, ...playerCards].forEach(card => {
             this.systemView.returnCardToDeck(card);
         });
         
@@ -547,46 +531,14 @@ class GameController {
     }
     
     /**
-     * Deal initial cards for a new game
-     */
-    dealInitialCards() {
-        // Deal cards in proper order
-        setTimeout(() => {
-            // First card to player (face up)
-            this.dealInitialCard('player', true);
-            
-            setTimeout(() => {
-                // First card to dealer (face up)
-                this.dealInitialCard('dealer', true);
-                
-                setTimeout(() => {
-                    // Second card to player (face up)
-                    this.dealInitialCard('player', true);
-                    
-                    setTimeout(() => {
-                        // Second card to dealer (face down)
-                        this.dealInitialCard('dealer', false);
-                        
-                        // Check for blackjack
-                        setTimeout(() => {
-                            this.checkInitialBlackjack();
-                        }, 700);
-                    }, 700);
-                }, 700);
-            }, 700);
-        }, 100);
-    }
-    
-    /**
-     * Deal a card in the initial deal
+     * Helper to handle card dealing animation with timing
      * @param {string} target - 'dealer' or 'player'
      * @param {boolean} faceUp - Whether card should be face up
+     * @param {Function} callback - Optional callback after card is dealt
      */
-    dealInitialCard(target, faceUp) {
+    dealCard(target, faceUp, callback) {
         const cardToDeal = this.systemView.getTopCard();
-        if (!cardToDeal) {
-            return;
-        }
+        if (!cardToDeal) return;
         
         // Remove from model's deck
         this.systemModel.deckCards.shift();
@@ -597,29 +549,59 @@ class GameController {
         // Animate card dealing
         cardToDeal.classList.add("fade-out");
         setTimeout(() => {
-            const container = target === 'dealer' ? this.playerView.handContainerDealer : this.playerView.handContainerPlayer;
+            const container = this.playerView.getHandContainer(target);
             this.playerView.slideCardIntoHand(cardToDeal, container);
             
             setTimeout(() => {
-                if (target === 'player') {
-                    cardToDeal.controller?.enableClick();
-                } else {
-                    cardToDeal.controller?.disableClick();
-                }
+                cardToDeal.controller?.[target === 'player' ? 'enableClick' : 'disableClick']();
                 
                 // Set face up/down state
-                if (faceUp && !cardToDeal.controller?.isFaceUp()) {
-                    cardToDeal.controller?.toggleCard();
-                } else if (!faceUp && cardToDeal.controller?.isFaceUp()) {
+                if (faceUp !== cardToDeal.controller?.isFaceUp()) {
                     cardToDeal.controller?.toggleCard();
                 }
                 
                 setTimeout(() => {
                     this.arrangeCardsInStack();
                     this.updateCounters();
+                    if (callback) callback();
                 }, 300);
             }, 600);
         }, 600);
+    }
+    
+    /**
+     * Deal initial cards for a new game
+     */
+    dealInitialCards() {
+        const dealSequence = [
+            {target: 'player', faceUp: true},
+            {target: 'dealer', faceUp: true},
+            {target: 'player', faceUp: true},
+            {target: 'dealer', faceUp: false}
+        ];
+        
+        const dealNext = (index) => {
+            if (index >= dealSequence.length) {
+                // All cards dealt, check for blackjack
+                setTimeout(() => this.checkInitialBlackjack(), 700);
+                return;
+            }
+            
+            const {target, faceUp} = dealSequence[index];
+            this.dealCard(target, faceUp, () => setTimeout(() => dealNext(index + 1), 700));
+        };
+        
+        // Start dealing sequence
+        setTimeout(() => dealNext(0), 100);
+    }
+    
+    /**
+     * Deal a card in the initial deal
+     * @param {string} target - 'dealer' or 'player'
+     * @param {boolean} faceUp - Whether card should be face up
+     */
+    dealInitialCard(target, faceUp) {
+        this.dealCard(target, faceUp);
     }
     
     /**
@@ -662,7 +644,7 @@ class GameController {
         console.log("Player hits.");
         // Disable buttons during animation
         this.playerView.setGameActionButtonsState(DISABLE, DISABLE);
-        this.systemView.setNewGameButtonState(DISABLE); // Disable New Game button
+        this.systemView.setNewGameButtonState(DISABLE);
         
         // Deal card to player
         this.dealCardToHand('player');
@@ -675,7 +657,7 @@ class GameController {
         console.log("Player stands. Dealer's turn.");
         // Disable player action buttons
         this.playerView.setGameActionButtonsState(DISABLE, DISABLE);
-        this.systemView.setNewGameButtonState(DISABLE); // Disable New Game button
+        this.systemView.setNewGameButtonState(DISABLE);
         
         // Change turn in model
         this.playerModel.setPlayerTurn(false);
@@ -736,38 +718,15 @@ class GameController {
         // Disable New Game button during dealer's action
         this.systemView.setNewGameButtonState(true);
         
-        // Remove from deck in model
-        this.systemModel.deckCards.shift();
-        
-        // Add to dealer's hand in model
-        this.playerModel.addCardToHand('dealer', cardToDeal);
-        
-        // Animation
-        cardToDeal.classList.add("fade-out");
-        
-        setTimeout(() => {
-            this.playerView.slideCardIntoHand(cardToDeal, this.playerView.handContainerDealer);
-            
-            setTimeout(() => {
-                // Always face up for dealer's turn
-                if (!cardToDeal.controller?.isFaceUp()) {
-                    cardToDeal.controller?.toggleCard();
-                }
-                
-                setTimeout(() => {
-                    this.arrangeCardsInStack();
-                    this.updateCounters();
-                    
-                    const dealerCards = this.playerModel.getDealerCards();
-                    if (this.systemModel.checkBust(dealerCards)) {
-                        console.log("Dealer busts!");
-                        this.endGame("player");
-                    } else {
-                        setTimeout(() => this.dealerPlay(), 700);
-                    }
-                }, 300);
-            }, 600);
-        }, 600);
+        this.dealCard('dealer', true, () => {
+            const dealerCards = this.playerModel.getDealerCards();
+            if (this.systemModel.checkBust(dealerCards)) {
+                console.log("Dealer busts!");
+                this.endGame("player");
+            } else {
+                setTimeout(() => this.dealerPlay(), 700);
+            }
+        });
     }
     
     /**
@@ -789,33 +748,19 @@ class GameController {
         // End game in model
         this.systemModel.endGame(winner);
         
-        // Disable game buttons
-        this.playerView.setGameActionButtonsState(DISABLE, DISABLE);
+        // Set buttons to appropriate end-game state
+        this.setAllButtonStates(false, true, true, false, true, true);
         
         // Update UI with result
         this.systemView.displayGameResult(winner);
         
         // Log result
-        let resultMessage = "";
-        switch(winner) {
-            case "player":
-                resultMessage = "Player wins!";
-                break;
-            case "dealer":
-                resultMessage = "Dealer wins!";
-                break;
-            case "tie":
-                resultMessage = "It's a tie!";
-                break;
-        }
-        console.log(resultMessage);
-        
-        // Enable new game button - this is the only button that should be enabled at the end of a game
-        this.systemView.setNewGameButtonState(false);
-        // Ensure admin buttons are enabled (except for deal buttons, which should remain disabled)
-        this.systemView.setAdminButtonsState(false);
-        this.playerView.setDealerButtonsState(true);
-        this.playerView.setPlayerButtonsState(true);
+        const resultMessages = {
+            "player": "Player wins!",
+            "dealer": "Dealer wins!",
+            "tie": "It's a tie!"
+        };
+        console.log(resultMessages[winner] || "Game ended.");
     }
     
     /**

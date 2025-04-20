@@ -41,6 +41,15 @@ class PlayerModel {
     }
     
     /**
+     * Get cards from a specific hand
+     * @param {string} target - 'dealer' or 'player'
+     * @returns {Array} - Cards from the specified hand
+     */
+    getCards(target) {
+        return target === 'dealer' ? this.dealerCards : this.playerCards;
+    }
+    
+    /**
      * Clear all hands
      */
     clearHands() {
@@ -73,23 +82,24 @@ class PlayerModel {
     }
     
     /**
+     * Get visible cards from a hand
+     * @param {string} target - 'dealer' or 'player'
+     * @param {boolean} countOnly - Whether to return just the count
+     * @returns {Array|number} - Visible cards or count of visible cards
+     */
+    getVisibleCards(target, countOnly = false) {
+        const cards = this.getCards(target);
+        const visibleCards = cards.filter(card => card.controller?.isFaceUp());
+        return countOnly ? visibleCards.length : visibleCards;
+    }
+    
+    /**
      * Get the count of cards that are face up in a hand
      * @param {string} target - 'dealer' or 'player'
      * @returns {number} - Number of face up cards
      */
     getVisibleCardCount(target) {
-        const cards = target === 'dealer' ? this.dealerCards : this.playerCards;
-        return cards.filter(card => card.controller?.isFaceUp()).length;
-    }
-    
-    /**
-     * Get visible cards from a hand
-     * @param {string} target - 'dealer' or 'player'
-     * @returns {Array} - Visible cards
-     */
-    getVisibleCards(target) {
-        const cards = target === 'dealer' ? this.dealerCards : this.playerCards;
-        return cards.filter(card => card.controller?.isFaceUp());
+        return this.getVisibleCards(target, true);
     }
     
     /**
@@ -98,7 +108,7 @@ class PlayerModel {
      * @param {number} cardIndex - Index of the card to toggle
      */
     toggleCardVisibility(target, cardIndex) {
-        const cards = target === 'dealer' ? this.dealerCards : this.playerCards;
+        const cards = this.getCards(target);
         if (cardIndex >= 0 && cardIndex < cards.length) {
             cards[cardIndex].controller?.toggleCard();
         }
@@ -110,7 +120,7 @@ class PlayerModel {
      * @returns {boolean} - Whether all cards are face up
      */
     areAllCardsFaceUp(target) {
-        const cards = target === 'dealer' ? this.dealerCards : this.playerCards;
+        const cards = this.getCards(target);
         return cards.every(card => card.controller?.isFaceUp());
     }
 }

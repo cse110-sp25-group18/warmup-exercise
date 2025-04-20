@@ -12,13 +12,26 @@ class SystemView {
         this.cardCounterElement = document.getElementById("card-counter");
         
         // Admin buttons
-        this.flipButton = document.getElementById("flip-button");
-        this.shuffleButton = document.getElementById("shuffle-button");
-        this.resetButton = document.getElementById("reset-button");
-        this.rulesButton = document.getElementById("rules-button");
+        this.adminButtons = {
+            flip: document.getElementById("flip-button"),
+            shuffle: document.getElementById("shuffle-button"),
+            reset: document.getElementById("reset-button"),
+            rules: document.getElementById("rules-button")
+        };
         
         // Game buttons
         this.newGameButton = document.getElementById("new-game-button");
+    }
+    
+    /**
+     * Set button disabled state
+     * @param {HTMLElement} button - The button element
+     * @param {boolean} isDisabled - Whether the button should be disabled
+     */
+    setButtonState(button, isDisabled) {
+        if (button) {
+            button.disabled = isDisabled;
+        }
     }
     
     /**
@@ -34,10 +47,9 @@ class SystemView {
      * @param {boolean} isDisabled - Whether buttons should be disabled
      */
     setAdminButtonsState(isDisabled) {
-        this.flipButton.disabled = isDisabled;
-        this.shuffleButton.disabled = isDisabled;
-        this.resetButton.disabled = isDisabled;
-        this.rulesButton.disabled = isDisabled;
+        Object.values(this.adminButtons).forEach(button => 
+            this.setButtonState(button, isDisabled)
+        );
     }
     
     /**
@@ -45,7 +57,35 @@ class SystemView {
      * @param {boolean} isDisabled - Whether the button should be disabled
      */
     setNewGameButtonState(isDisabled) {
-        this.newGameButton.disabled = isDisabled;
+        this.setButtonState(this.newGameButton, isDisabled);
+    }
+    
+    /**
+     * Format hand status text
+     * @param {number} value - Hand value
+     * @param {boolean} isBlackjack - Whether hand has blackjack
+     * @param {boolean} isBust - Whether hand is bust
+     * @param {boolean} isWinner - Whether hand is winner
+     * @param {boolean} isTie - Whether game is a tie
+     * @returns {string} - Formatted status text
+     */
+    formatHandStatus(value, isBlackjack, isBust, isWinner, isTie) {
+        let text = value.toString();
+        
+        if (isBlackjack) {
+            text += " (Blackjack! ♣️♥️)";
+            console.log(`Formatting with blackjack: ${text}`);
+        } else if (isBust) {
+            text += " (Bust)";
+        }
+        
+        if (isWinner) {
+            text += " ✅ Winner!";
+        } else if (isTie) {
+            text += " (Tie)";
+        }
+        
+        return text;
     }
     
     /**
@@ -102,23 +142,35 @@ class SystemView {
      * @param {boolean} allDealerCardsVisible - Whether all dealer cards are visible
      */
     updateScores(dealerValue, playerValue, dealerBlackjack, dealerBust, playerBlackjack, playerBust, allDealerCardsVisible) {
-        // Update dealer score
-        this.dealerScoreElement.textContent = dealerValue;
+        // Log the inputs for debugging
+        console.log(`Updating scores - Player: ${playerValue} (Blackjack: ${playerBlackjack}, Bust: ${playerBust})`);
+        console.log(`Updating scores - Dealer: ${dealerValue} (Blackjack: ${dealerBlackjack}, Bust: ${dealerBust}, Visible: ${allDealerCardsVisible})`);
+        
+        // Update player score (always visible)
+        this.playerScoreElement.textContent = this.formatHandStatus(
+            playerValue, 
+            playerBlackjack, 
+            playerBust, 
+            false, 
+            false
+        );
+        
+        // Update dealer score (may hide status if cards are not all visible)
         if (allDealerCardsVisible) {
-            if (dealerBlackjack) {
-                this.dealerScoreElement.textContent = dealerValue + " (Blackjack!)";
-            } else if (dealerBust) {
-                this.dealerScoreElement.textContent = dealerValue + " (Bust)";
-            }
+            this.dealerScoreElement.textContent = this.formatHandStatus(
+                dealerValue, 
+                dealerBlackjack, 
+                dealerBust, 
+                false, 
+                false
+            );
+        } else {
+            this.dealerScoreElement.textContent = dealerValue;
         }
         
-        // Update player score
-        this.playerScoreElement.textContent = playerValue;
-        if (playerBlackjack) {
-            this.playerScoreElement.textContent = playerValue + " (Blackjack!)";
-        } else if (playerBust) {
-            this.playerScoreElement.textContent = playerValue + " (Bust)";
-        }
+        // Log the final displayed texts for debugging
+        console.log(`Display - Player score: "${this.playerScoreElement.textContent}"`);
+        console.log(`Display - Dealer score: "${this.dealerScoreElement.textContent}"`);
     }
     
     /**
@@ -126,18 +178,23 @@ class SystemView {
      * @param {string} winner - The winner ('player', 'dealer', or 'tie')
      */
     displayGameResult(winner) {
-        switch(winner) {
-            case "player":
-                this.playerScoreElement.textContent += " ✅ Winner!";
-                break;
-            case "dealer":
-                this.dealerScoreElement.textContent += " ✅ Winner!";
-                break;
-            case "tie":
-                this.playerScoreElement.textContent += " (Tie)";
-                this.dealerScoreElement.textContent += " (Tie)";
-                break;
-        }
+        const isTie = winner === "tie";
+        
+        this.playerScoreElement.textContent = this.formatHandStatus(
+            parseInt(this.playerScoreElement.textContent), 
+            this.playerScoreElement.textContent.includes("Blackjack"), 
+            this.playerScoreElement.textContent.includes("Bust"), 
+            winner === "player", 
+            isTie
+        );
+        
+        this.dealerScoreElement.textContent = this.formatHandStatus(
+            parseInt(this.dealerScoreElement.textContent), 
+            this.dealerScoreElement.textContent.includes("Blackjack"), 
+            this.dealerScoreElement.textContent.includes("Bust"), 
+            winner === "dealer", 
+            isTie
+        );
     }
     
     /**
@@ -145,10 +202,10 @@ class SystemView {
      * @param {Object} handlers - Object containing event handler functions
      */
     bindSystemEvents(handlers) {
-        this.flipButton.addEventListener("click", handlers.flip);
-        this.shuffleButton.addEventListener("click", handlers.shuffle);
-        this.resetButton.addEventListener("click", handlers.reset);
-        this.rulesButton.addEventListener("click", handlers.showRules);
+        this.adminButtons.flip.addEventListener("click", handlers.flip);
+        this.adminButtons.shuffle.addEventListener("click", handlers.shuffle);
+        this.adminButtons.reset.addEventListener("click", handlers.reset);
+        this.adminButtons.rules.addEventListener("click", handlers.showRules);
         this.newGameButton.addEventListener("click", handlers.newGame);
     }
 }

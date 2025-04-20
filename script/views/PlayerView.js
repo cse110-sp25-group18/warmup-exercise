@@ -15,29 +15,47 @@ class PlayerView {
     }
     
     /**
+     * Get hand container element for a target
+     * @param {string} target - 'dealer' or 'player'
+     * @returns {HTMLElement} - The hand container element
+     */
+    getHandContainer(target) {
+        return target === 'dealer' ? this.handContainerDealer : this.handContainerPlayer;
+    }
+    
+    /**
+     * Set button disabled state
+     * @param {HTMLElement} button - The button element
+     * @param {boolean} isDisabled - Whether the button should be disabled
+     */
+    setButtonState(button, isDisabled) {
+        button.disabled = isDisabled;
+    }
+    
+    /**
      * Control the enabled/disabled state of dealer buttons
-     * @param {boolean} disabled - Whether buttons should be disabled
+     * @param {boolean} isDisabled - Whether buttons should be disabled
      */
     setDealerButtonsState(isDisabled) {
-        this.dealButtonDealer.disabled = isDisabled;
+        this.setButtonState(this.dealButtonDealer, isDisabled);
     }
     
     /**
      * Control the enabled/disabled state of player buttons
-     * @param {boolean} disabled - Whether buttons should be disabled
+     * @param {boolean} isDisabled - Whether buttons should be disabled
      */
     setPlayerButtonsState(isDisabled) {
-        this.dealButtonPlayer.disabled = isDisabled;
+        this.setButtonState(this.dealButtonPlayer, isDisabled);
     }
     
     /**
      * Set game action buttons state
-     * @param {boolean} hitIsDisabled - Whether hit button should be disabled
-     * @param {boolean} standIsDisabled - Whether stand button should be disabled
+     * @param {boolean} isHitDisabled - Whether hit button should be disabled
+     * @param {boolean} isStandDisabled - Whether stand button should be disabled
      */
     setGameActionButtonsState(isHitDisabled, isStandDisabled) {
-        this.hitButton.disabled = isHitDisabled;
-        this.standButton.disabled = isStandDisabled;
+        this.setButtonState(this.hitButton, isHitDisabled);
+        this.setButtonState(this.standButton, isStandDisabled);
     }
     
     /**
@@ -46,7 +64,7 @@ class PlayerView {
      * @returns {Array} - Array of card elements
      */
     getHandCards(target) {
-        const container = target === 'dealer' ? this.handContainerDealer : this.handContainerPlayer;
+        const container = this.getHandContainer(target);
         return Array.from(container.querySelectorAll('card-element'));
     }
     
@@ -60,7 +78,7 @@ class PlayerView {
         card.classList.add("fade-out");
         
         setTimeout(() => {
-            const container = target === 'dealer' ? this.handContainerDealer : this.handContainerPlayer;
+            const container = this.getHandContainer(target);
             this.slideCardIntoHand(card, container);
             
             if (callback) {
