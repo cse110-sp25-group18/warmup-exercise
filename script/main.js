@@ -475,11 +475,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     hitButton.addEventListener("click", function() {
-        console.log("Hit button clicked - functionality to be implemented");
+        console.log("Hit button clicked");
+        playerHit();
     });
     
     standButton.addEventListener("click", function() {
-        console.log("Stand button clicked - functionality to be implemented");
+        console.log("Stand button clicked");
+        playerStand();
     });
     
     // Function to start a new game of blackjack
@@ -601,6 +603,186 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Player wins with blackjack!");
             }
         }
+    }
+
+    // Function to handle the player's Hit action
+    function playerHit() {
+        // Disable buttons during card animation
+        hitButton.disabled = true;
+        standButton.disabled = true;
+        
+        // Deal one more card to player (always face up)
+        dealCardToPlayer();
+    }
+    
+    // Function to deal a card to the player
+    function dealCardToPlayer() {
+        const allCards = deckContainer.querySelectorAll('card-element');
+        if (allCards.length === 0) {
+            alert("No more cards in the deck!");
+            return;
+        }
+        
+        const cardToDeal = allCards[0];
+        cardToDeal.classList.add("fade-out");
+        
+        setTimeout(() => {
+            slideCardIntoHand(cardToDeal, handContainerPlayer);
+            
+            // Ensure the card is face up
+            if (!cardToDeal._isFaceUp) {
+                cardToDeal.toggle();
+            }
+            
+            arrangeCardsInStack();
+            updateHandValues();
+            updateCardCounter();
+            
+            // Check if player busts
+            if (checkBust(handContainerPlayer)) {
+                console.log("Player busts!");
+                endGame("dealer");
+            } else {
+                // Re-enable buttons
+                hitButton.disabled = false;
+                standButton.disabled = false;
+            }
+        }, 600);
+    }
+    
+    // Function to handle the player's Stand action
+    function playerStand() {
+        console.log("Player stands. Dealer's turn.");
+        // Disable player action buttons
+        hitButton.disabled = true;
+        standButton.disabled = true;
+        
+        // Start dealer's turn
+        setTimeout(dealerPlay, 500);
+    }
+    
+    // Function to handle dealer's automated play
+    function dealerPlay() {
+        // First, flip the dealer's face-down card
+        const dealerCards = handContainerDealer.querySelectorAll('card-element');
+        let dealerCardFlipped = false;
+        
+        // Check for any face-down cards and flip them
+        for (let card of dealerCards) {
+            if (!card._isFaceUp) {
+                card.toggle();
+                dealerCardFlipped = true;
+                break; // Only flip one card at a time for better animation
+            }
+        }
+        
+        // Update scores after flipping
+        updateHandValues();
+        
+        // If we flipped a card, wait a moment before continuing
+        if (dealerCardFlipped) {
+            setTimeout(dealerPlay, 700);
+            return;
+        }
+        
+        // Calculate dealer's current hand value
+        const dealerValue = calculateHandValue(Array.from(dealerCards));
+        
+        // Dealer must hit on 16 or less, stand on 17 or more
+        if (dealerValue < 17) {
+            console.log("Dealer hits.");
+            dealCardToDealer();
+        } else {
+            console.log("Dealer stands with " + dealerValue);
+            // Determine winner
+            determineWinner();
+        }
+    }
+    
+    // Function to deal a card to the dealer
+    function dealCardToDealer() {
+        const allCards = deckContainer.querySelectorAll('card-element');
+        if (allCards.length === 0) {
+            alert("No more cards in the deck!");
+            return;
+        }
+        
+        const cardToDeal = allCards[0];
+        cardToDeal.classList.add("fade-out");
+        
+        setTimeout(() => {
+            slideCardIntoHand(cardToDeal, handContainerDealer);
+            
+            // Dealer cards are always face up during play
+            if (!cardToDeal._isFaceUp) {
+                cardToDeal.toggle();
+            }
+            
+            arrangeCardsInStack();
+            updateHandValues();
+            updateCardCounter();
+            
+            // Check if dealer busts
+            if (checkBust(handContainerDealer)) {
+                console.log("Dealer busts!");
+                endGame("player");
+            } else {
+                // Continue dealer's turn after a short delay
+                setTimeout(dealerPlay, 700);
+            }
+        }, 600);
+    }
+    
+    // Function to determine the winner
+    function determineWinner() {
+        const playerCards = handContainerPlayer.querySelectorAll('card-element');
+        const dealerCards = handContainerDealer.querySelectorAll('card-element');
+        
+        const playerValue = calculateHandValue(Array.from(playerCards));
+        const dealerValue = calculateHandValue(Array.from(dealerCards));
+        
+        // Compare hands and determine winner
+        if (playerValue > dealerValue) {
+            console.log("Player wins with " + playerValue + " vs dealer's " + dealerValue);
+            endGame("player");
+        } else if (dealerValue > playerValue) {
+            console.log("Dealer wins with " + dealerValue + " vs player's " + playerValue);
+            endGame("dealer");
+        } else {
+            console.log("It's a tie! Both have " + playerValue);
+            endGame("tie");
+        }
+    }
+    
+    // Function to end the game and display result
+    function endGame(winner) {
+        // Disable game buttons
+        hitButton.disabled = true;
+        standButton.disabled = true;
+        
+        // Display result
+        let resultMessage = "";
+        
+        switch(winner) {
+            case "player":
+                resultMessage = "Player wins!";
+                playerScoreElement.textContent += " ✅ Winner!";
+                break;
+            case "dealer":
+                resultMessage = "Dealer wins!";
+                dealerScoreElement.textContent += " ✅ Winner!";
+                break;
+            case "tie":
+                resultMessage = "It's a tie!";
+                playerScoreElement.textContent += " (Tie)";
+                dealerScoreElement.textContent += " (Tie)";
+                break;
+        }
+        
+        console.log(resultMessage);
+        
+        // Enable new game button
+        newGameButton.disabled = false;
     }
 });
 

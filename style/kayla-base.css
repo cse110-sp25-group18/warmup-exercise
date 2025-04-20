@@ -227,8 +227,8 @@ footer a {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Initially disable game action buttons */
-#hit-button, #stand-button {
+/* Apply disabled styling only to actually disabled buttons */
+#hit-button:disabled, #stand-button:disabled, #new-game-button:disabled {
     opacity: 0.7;
     cursor: not-allowed;
 }
