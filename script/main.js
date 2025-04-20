@@ -257,8 +257,8 @@ document.addEventListener('DOMContentLoaded', () => {
         deckContainer.appendChild(card);
         card.classList.remove("unrender");
         
-        const suit = card.controller ? card.controller?.getSuit() : card.suit;
-        const rank = card.controller ? card.controller?.getRank() : card.rank;
+        const suit = card.controller?.getSuit();
+        const rank = card.controller?.getRank();
         console.log("card moved back to deck:", rank, "of", suit);
     }
     
