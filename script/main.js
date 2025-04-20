@@ -10,11 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const flipButton = document.getElementById("flip-button");
     const shuffleButton = document.getElementById("shuffle-button");
     const dealButton = document.getElementById("deal-button");
-
+    const resetButton = document.getElementById("reset-button");
     function buttonsOff(value){
         dealButton.disabled = value;
         flipButton.disabled = value;
         shuffleButton.disabled = value;
+        resetButton.disabled = value;
     }
 
     flipButton.addEventListener("click", function () {
@@ -201,6 +202,41 @@ document.addEventListener('DOMContentLoaded', () => {
             buttonsOff(false);
         }, 600);
     });
+
+    resetButton.addEventListener("click", function () {
+        console.log("Reset button clicked");
+        buttonsOff(true);
+        
+        const cardsInHand = handContainer.querySelectorAll('card-element');
+        
+        if (cardsInHand.length === 0) {
+            buttonsOff(false);
+            return;
+        }
+        
+        cardsInHand.forEach(card => {
+            card.classList.remove("fade-in");
+            card.classList.add("fade-out");
+        });
+        
+        setTimeout(() => {
+            cardsInHand.forEach(card => {
+                card.classList.add("unrender");
+                card.classList.remove("fade-out", "in-hand");
+                if (card._isFaceUp) {
+                    card.toggle();
+                }
+                deckContainer.appendChild(card);
+                card.classList.remove("unrender");
+                console.log("card moved back to deck: ", card.rank, card.suit);
+            });
+            
+            arrangeCardsInStack();
+            buttonsOff(false);
+            shuffleButton.click();
+
+        }, 600);
+    });
     function slideCardIntoHand(card) {
         card.classList.add("in-hand", "unrender");
         handContainer.appendChild(card);  // add to the DOM
@@ -210,18 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     console.log("script loaded");
-
-    const suits = ["hearts", "diamonds", "spades", "clubs"];
-    const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-    
-    // Add test cards - the last one added will be the top card (first in DOM)
-    // Adding a total of 5 cards to demonstrate the hide/show functionality
-    addCard("clubs", "Q");  // This will be hidden (4th card)
-    addCard("spades", "J"); // This will be hidden (5th card)
-    addCard("diamonds", "2"); // This will be visible (3rd card)
-    addCard("hearts", "K"); // This will be visible (2nd card)
-    addCard("spades", "A"); // This will be visible (1st/top card)
-
     
     // Function to arrange cards in a stacked layout
     function arrangeCardsInStack() {
@@ -274,5 +298,29 @@ document.addEventListener('DOMContentLoaded', () => {
         // Arrange cards in a stack after adding a new card
         arrangeCardsInStack();
     }
+
+        const suits = ["hearts", "diamonds", "spades", "clubs"];
+        const ranks = [
+            "A",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "J",
+            "Q",
+            "K",
+        ];
+    for (let suit of suits) {
+        for (let rank of ranks) {
+            addCard(suit, rank);
+        }
+    }
+
+    shuffleButton.click();
 });
 
