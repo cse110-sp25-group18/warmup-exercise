@@ -347,9 +347,6 @@ class GameController {
         // Re-arrange cards in stack
         this.arrangeCardsInStack();
         
-        // Re-enable buttons
-        this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
-        
         // Call callback if provided
         this.executeCallback(callback);
     }
