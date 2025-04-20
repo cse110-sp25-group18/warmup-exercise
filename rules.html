@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Playing Cards</title>
+        <script src="script/rules.js" type="module"></script>
+        <link rel="stylesheet" href="style/kayla-base.css">
+        <link href="https://fonts.cdnfonts.com/css/spongebob-font-condensed" rel="stylesheet">
+    </head>
+
+    <body>
+        <header>
+            <nav>
+                <button id="back-button">Back</button>
+            </nav>
+        </header>
+
+        <h1>Rules</h1>
+
+        <h2>Object of the Game</h2>
+        <p>
+            The player attempts to beat the dealer by getting a count as close to 21 
+            as possible, without going over 21.
+        </p>
+
+        <h2>Card Values</h2>
+        <p>
+            The player can choose whether an ace is worth 1 or 11. Face cards are 
+            worth 10 points. Each number card is worth its number.
+        </p>
+
+        <h2>
+            Betting
+        </h2>
+        <p>
+            Before the deal begins, each player places a bet. Minimum and maximum 
+            limits are established on the betting.
+        </p>
+
+        <h2>
+            The Deal
+        </h2>
+        <p>
+            When the player has placed their bet, the dealer gives one card face up 
+            to the player, and then one card face up to themselves. Another card of 
+            is then dealt face up to the player, but the dealer takes the second 
+            card face down. Thus, the player receives two cards face up, and the 
+            dealer receives one card face up and one card face down.
+        </p>
+
+        <h2>
+            The Play
+        </h2>
+        <p>
+            The player goes first and must decide whether to "stand" (not ask for 
+            another card) or "hit" (ask for another card in an attempt to get closer 
+            to a count of 21, or even hit 21 exactly). Thus, the player may stand on 
+            the two cards originally dealt to them, or they may ask the dealer for 
+            additional cards, one at a time, until deciding to stand on the total 
+            (if it is 21 or under), or goes "bust" (if it is over 21). In the latter 
+            case, the player loses and the dealer collects the bet wagered.
+        </p>
+
+        <h2>
+            The Dealer's Play
+        </h2>
+        <p>
+            When the dealer has served the player, the dealers face-down card is 
+            turned up. If the total is 17 or more, it must stand. If the total is 16 
+            or under, they must take a card. The dealer must continue to take cards 
+            until the total is 17 or more, at which point the dealer must stand. If 
+            the dealer has an ace, and counting it as 11 would bring the total to 17 
+            or more (but not over 21), the dealer must count the ace as 11 and 
+            stand. The dealer's decisions, then, are automatic on all plays, whereas 
+            the player always has the option of taking one or more cards.
+        </p>
+
+        <footer>
+            <p>Source: <a href="https://bicyclecards.com/how-to-play/blackjack">
+                Bicycle Blackjack Rules
+            </a></p>
+            <p>Copyright 2025 by CSE110 25 Spring Group 18</p>
+        </footer>
+    </body>
+</html>

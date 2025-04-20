@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dealButtonDealer = document.getElementById("deal-button-dealer");
     const dealButtonPlayer = document.getElementById("deal-button-player");
     const resetButton = document.getElementById("reset-button");
+    const rulesButton = document.getElementById("rules-button");
+    
     
     // Blackjack game buttons
     const newGameButton = document.getElementById("new-game-button");
@@ -127,7 +129,14 @@ document.addEventListener('DOMContentLoaded', () => {
         shuffleButton.disabled = value;
         resetButton.disabled = value;
         newGameButton.disabled = value;
+        rulesButton.disabled = value;
     }
+
+    rulesButton.addEventListener("click", function () {
+        console.log("Rules button clicked");
+
+        window.location.href = "rules.html";
+    });
 
     flipButton.addEventListener("click", function () {
         console.log("Flip button clicked");
