@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     flipButton.addEventListener("click", function () {
         console.log("Flip button clicked");
-        const cards = document.querySelectorAll('card-element');
+        const cards = deckContainer.querySelectorAll('card-element');
         // Only flip the top card 
         if (cards.length > 0) {
             const topCard = cards[0]; 
