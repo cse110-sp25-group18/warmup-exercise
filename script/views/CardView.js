@@ -11,7 +11,7 @@ class CardView extends HTMLElement {
     connectedCallback() {
         // If the card was clicked and it's the top card, notify the controller
         this.addEventListener("click", () => {
-            if (this.isTopCard || this.classList.contains('top-card')) {
+            if (this.model.isTopCard || this.classList.contains('top-card')) {
                 // Dispatch a custom event that the controller can listen for
                 this.dispatchEvent(new CustomEvent('card-click', {
                     bubbles: true,
@@ -49,6 +49,18 @@ class CardView extends HTMLElement {
         if (this.model.isFaceUp) {
             card.classList.add("face-up");
         }
+
+        // Add click event to the card element inside shadow DOM
+        card.addEventListener("click", (e) => {
+            if (this.model.isTopCard || this.classList.contains('top-card')) {
+                console.log("Card clicked inside shadow DOM");
+                this.dispatchEvent(new CustomEvent('card-click', {
+                    bubbles: true,
+                    composed: true
+                }));
+                e.stopPropagation();
+            }
+        });
 
         // Remove initial-load class after a short delay to allow transitions
         setTimeout(() => {
@@ -144,6 +156,7 @@ class CardView extends HTMLElement {
     toggleFace() {
         const card = this.shadowRoot.querySelector('.card');
         if (card) {
+            console.log("Toggling card face");
             card.classList.toggle('face-up');
         }
     }
