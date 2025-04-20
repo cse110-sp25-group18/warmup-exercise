@@ -58,32 +58,53 @@ document.addEventListener('DOMContentLoaded', () => {
         return sum;
     }
 
-    function checkBlackjack(handContainer) {
+    function checkBlackjack(handContainer, onlyVisibleCards = false) {
         const cards = handContainer.querySelectorAll('card-element');
+        let cardsToCheck = Array.from(cards);
+        
+        // For dealer with hidden cards, we need to consider if we're only checking visible cards
+        if (onlyVisibleCards && handContainer === handContainerDealer) {
+            cardsToCheck = cardsToCheck.filter(card => card._isFaceUp);
+        }
+        
         // Blackjack is 21 points with exactly 2 cards
-        return cards.length === 2 && calculateHandValue(Array.from(cards)) === 21;
+        return cardsToCheck.length === 2 && calculateHandValue(cardsToCheck) === 21;
     }
     
-    function checkBust(handContainer) {
+    function checkBust(handContainer, onlyVisibleCards = false) {
         const cards = handContainer.querySelectorAll('card-element');
+        let cardsToCheck = Array.from(cards);
+        
+        // For dealer with hidden cards, we need to consider if we're only checking visible cards
+        if (onlyVisibleCards && handContainer === handContainerDealer) {
+            cardsToCheck = cardsToCheck.filter(card => card._isFaceUp);
+        }
+        
         // Bust is over 21 points
-        return calculateHandValue(Array.from(cards)) > 21;
+        return calculateHandValue(cardsToCheck) > 21;
     }
 
     function updateHandValues() {
         // Calculate and update dealer's score
         const dealerCards = handContainerDealer.querySelectorAll('card-element');
-        const dealerValue = calculateHandValue(Array.from(dealerCards));
+        
+        // For dealer, only count face-up cards for the displayed score
+        const visibleDealerCards = Array.from(dealerCards).filter(card => card._isFaceUp);
+        const dealerValue = calculateHandValue(visibleDealerCards);
         dealerScoreElement.textContent = dealerValue;
         
-        // Add indicators for blackjack or bust
-        if (checkBlackjack(handContainerDealer)) {
-            dealerScoreElement.textContent = dealerValue + " (Blackjack!)";
-        } else if (checkBust(handContainerDealer)) {
-            dealerScoreElement.textContent = dealerValue + " (Bust)";
+        // Add indicators for blackjack or bust only if all cards are visible
+        const allDealerCardsVisible = visibleDealerCards.length === dealerCards.length;
+        
+        if (allDealerCardsVisible) {
+            if (checkBlackjack(handContainerDealer)) {
+                dealerScoreElement.textContent = dealerValue + " (Blackjack!)";
+            } else if (checkBust(handContainerDealer)) {
+                dealerScoreElement.textContent = dealerValue + " (Bust)";
+            }
         }
         
-        // Calculate and update player's score
+        // For player, always count all cards (they're all face up)
         const playerCards = handContainerPlayer.querySelectorAll('card-element');
         const playerValue = calculateHandValue(Array.from(playerCards));
         playerScoreElement.textContent = playerValue;
@@ -599,8 +620,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Determine the outcome
             if (checkBlackjack(handContainerDealer)) {
                 console.log("Dealer also has blackjack! It's a tie.");
+                endGame("tie");
             } else {
                 console.log("Player wins with blackjack!");
+                endGame("player");
             }
         }
     }
