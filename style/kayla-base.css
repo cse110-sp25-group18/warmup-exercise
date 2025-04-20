@@ -48,6 +48,16 @@ h1::after {
     overflow: visible;
 }
 
+
+#hand-container-dealer card-element,
+#hand-container-player card-element {
+    margin-left: -60px; /* create overlap — adjust as needed */
+    transition: transform 0.3s ease, z-index 0.1s;
+}
+#hand-container-dealer card-element:first-child, #hand-container-player card-element:first-child {
+    margin-left: 0;
+}
+
 #deck-container {
     position: relative;
     width: 170px;

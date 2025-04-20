@@ -1,7 +1,5 @@
 //script.js
-import Card from "./card.js";
-
-customElements.define('card-element', Card);
+import CardFactory from "./card.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const deckContainer = document.getElementById("deck-container");
@@ -29,9 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Blackjack game functions
     function getCardValue(card) {
-        if (card.rank === "A") return 11;  // Ace initially counts as 11
-        if (["K", "Q", "J"].includes(card.rank)) return 10;
-        return parseInt(card.rank);
+        if (card.controller?.getRank() === "A") return 11;  // Ace initially counts as 11
+        if (["K", "Q", "J"].includes(card.controller?.getRank())) return 10;
+        return parseInt(card.controller?.getRank());
     }
 
     function calculateHandValue(cards) {
@@ -44,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sum += value;
             
             // Count aces for later adjustment if needed
-            if (card.rank === "A") {
+            if (card.controller?.getRank() === "A") {
                 aceCount++;
             }
         });
@@ -64,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // For dealer with hidden cards, we need to consider if we're only checking visible cards
         if (onlyVisibleCards && handContainer === handContainerDealer) {
-            cardsToCheck = cardsToCheck.filter(card => card._isFaceUp);
+            cardsToCheck = cardsToCheck.filter(card => card.controller?.isFaceUp());
         }
         
         // Blackjack is 21 points with exactly 2 cards
@@ -77,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // For dealer with hidden cards, we need to consider if we're only checking visible cards
         if (onlyVisibleCards && handContainer === handContainerDealer) {
-            cardsToCheck = cardsToCheck.filter(card => card._isFaceUp);
+            cardsToCheck = cardsToCheck.filter(card => card.controller?.isFaceUp());
         }
         
         // Bust is over 21 points
@@ -89,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dealerCards = handContainerDealer.querySelectorAll('card-element');
         
         // For dealer, only count face-up cards for the displayed score
-        const visibleDealerCards = Array.from(dealerCards).filter(card => card._isFaceUp);
+        const visibleDealerCards = Array.from(dealerCards).filter(card => card.controller?.isFaceUp());
         const dealerValue = calculateHandValue(visibleDealerCards);
         dealerScoreElement.textContent = dealerValue;
         
@@ -133,11 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     flipButton.addEventListener("click", function () {
         console.log("Flip button clicked");
-        const cards = document.querySelectorAll('card-element');
+        const cards = deckContainer.querySelectorAll('card-element');
         // Only flip the top card 
         if (cards.length > 0) {
             const topCard = cards[0]; 
-            topCard.toggle();
+            topCard.controller?.toggleCard();
             // Update scores since flipping a dealer's card would change the visible score
             updateHandValues();
         }
@@ -167,8 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardsToAnimate = visibleCards.slice(0, 3);
         let topCardFlipped = false;
         cardsToAnimate.forEach(card => {
-            if(card._isFaceUp){
-                card.toggle();
+            if(card.controller?.isFaceUp()){
+                card.controller?.toggleCard();
                 setTimeout(() => handleShuffle(event, callback), 700);
                 topCardFlipped = true;
             }
@@ -258,8 +256,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Ensure all cards are face down before adding back
                 allCards.forEach(card => {
-                    if (card._isFaceUp) {
-                        card.toggle();
+                    if (card.controller?.isFaceUp()) {
+                        card.controller?.toggleCard();
                     }
                 });
                 
@@ -271,7 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Debug: Log the order of cards after shuffle
                 console.log('Cards after shuffle (top to bottom):');
                 allCards.forEach((card, index) => {
-                    console.log(`${index + 1}. ${card.rank} of ${card.suit}`);
+                    const suit = card.controller?.getSuit();
+                    const rank = card.controller?.getRank();
+                    console.log(`${index + 1}. ${rank} of ${suit}`);
                 });
                 
                 // Re-arrange cards in the stack
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     shuffleButton.shuffleCallback = null; // Clear it after use
                 }
             }, alignDuration);
-        }, returnTime + animationDuration);
+        }, returnTime);
     });
 
     dealButtonDealer.addEventListener("click", function () {
@@ -321,20 +321,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // - Dealer's first card face up, others face down
             if (targetHandContainer === handContainerPlayer) {
                 // For player, flip card face up if it's face down
-                if (!cardToDeal._isFaceUp) {
-                    cardToDeal.toggle();
+                if (!cardToDeal.controller?.isFaceUp()) {
+                    cardToDeal.controller?.toggleCard();
                 }
             } else if (targetHandContainer === handContainerDealer) {
                 // For dealer, first card face up, others face down
                 const dealerCards = handContainerDealer.querySelectorAll('card-element');
                 if (dealerCards.length === 1) { // This is the first card
-                    if (!cardToDeal._isFaceUp) {
-                        cardToDeal.toggle();
+                    if (!cardToDeal.controller?.isFaceUp()) {
+                        cardToDeal.controller?.toggleCard();
                     }
                 } else {
                     // Subsequent cards stay face down
-                    if (cardToDeal._isFaceUp) {
-                        cardToDeal.toggle();
+                    if (cardToDeal.controller?.isFaceUp()) {
+                        cardToDeal.controller?.toggleCard();
                     }
                 }
             }
@@ -393,12 +393,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function returnCardToDeck(card) {
         card.classList.add("unrender");
         card.classList.remove("fade-out", "in-hand");
-        if (card._isFaceUp) {
-            card.toggle();
+        
+        // Ensure card is face down
+        if (card.controller?.isFaceUp()) {
+            card.controller?.toggleCard();
         }
+        
         deckContainer.appendChild(card);
         card.classList.remove("unrender");
-        console.log("card moved back to deck: ", card.rank, card.suit);
+        
+        const suit = card.controller?.getSuit();
+        const rank = card.controller?.getRank();
+        console.log("card moved back to deck:", rank, "of", suit);
     }
     
     function slideCardIntoHand(card, targetHandContainer) {
@@ -433,65 +439,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardsToShow = Math.min(cards.length, 3);
         
         cards.forEach((card, index) => {
-            // Reverse the z-index logic so the first card is on top
-            card.style.zIndex = index === 0 ? 100 : (100 - index); // First card has highest z-index
-            
-            if (index < cardsToShow) {
-                // Card is one of the first three, show it with offset
-                card.style.display = 'block';
-                card.style.left = `${index * offset}px`;
-                card.style.top = `${index * offset}px`;
-                
-                // Only enable click events and hover effects on the first card (top card)
-                if (index === 0) {
-                    card.style.pointerEvents = 'auto';
-                    card.classList.add('top-card'); // Add class for hover effect
-                    card.isTopCard = true; // Set property on the card object
-                } else {
-                    card.style.pointerEvents = 'none';
-                    card.classList.remove('top-card'); // Remove class from non-top cards
-                    card.isTopCard = false; // Clear property on non-top cards
-                }
-            } else {
-                // Card beyond the first three, hide it but keep in DOM
-                card.style.display = 'none';
-                card.style.pointerEvents = 'none';
-                card.classList.remove('top-card');
-                card.isTopCard = false;
-            }
+            // Set stack position using controller
+            card.controller?.updatePosition(index, offset, cardsToShow);
+            card.controller?.setAsTopCard(index === 0);
         });
     }
     
     function addCard(suit, rank) {
-        const card = document.createElement('card-element');
-        card.suit = suit;
-        card.rank = rank;
+        // Use CardFactory to create a card with MVC
+        const cardController = CardFactory.createCard(suit, rank);
+        const cardElement = cardController?.getElement();
+        
+        // Store reference to controller in the element for easy access
+        cardElement.controller = cardController;
         
         // Insert as the first child to make it the top card
-        // Use insertBefore with the first child or null to prepend
         const firstCard = deckContainer.firstChild;
-        deckContainer.insertBefore(card, firstCard);
+        deckContainer.insertBefore(cardElement, firstCard);
         
         // Arrange cards in a stack after adding a new card
         arrangeCardsInStack();
     }
 
     const suits = ["hearts", "diamonds", "spades", "clubs"];
-    const ranks = [
-        "A",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "J",
-        "Q",
-        "K",
-    ];
+    const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     for (let suit of suits) {
         for (let rank of ranks) {
             addCard(suit, rank);
@@ -575,20 +546,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardToDeal = allCards[0];
         
         cardToDeal.classList.add("fade-out");
-        // fade out card from deck
         setTimeout(() => {
             slideCardIntoHand(cardToDeal, targetHandContainer);
             
-            // Set card face up or down as specified
-            if (faceUp && !cardToDeal._isFaceUp) {
-                cardToDeal.toggle();
-            } else if (!faceUp && cardToDeal._isFaceUp) {
-                cardToDeal.toggle();
-            }
-            
-            arrangeCardsInStack();
-            updateHandValues();
-            updateCardCounter();
+            setTimeout(() => {
+                if (faceUp && !cardToDeal.controller?.isFaceUp()) {
+                    cardToDeal.controller?.toggleCard();
+                } else if (!faceUp && cardToDeal.controller?.isFaceUp()) {
+                    cardToDeal.controller?.toggleCard();
+                }
+                
+                setTimeout(() => {
+                    arrangeCardsInStack();
+                    updateHandValues();
+                    updateCardCounter();
+                }, 300);
+            }, 600);
         }, 600);
     }
     
@@ -609,8 +582,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const faceDownCard = dealerCards[1];
             
             // Flip dealer's face-down card to see if they also have blackjack
-            if (!faceDownCard._isFaceUp) {
-                faceDownCard.toggle();
+            if (!faceDownCard.controller?.isFaceUp()) {
+                faceDownCard.controller?.toggleCard();
                 updateHandValues();
             }
             
@@ -627,48 +600,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to handle the player's Hit action
     function playerHit() {
+        console.log("Player hits.");
         // Disable buttons during card animation
         hitButton.disabled = true;
         standButton.disabled = true;
         
         // Deal one more card to player (always face up)
-        dealCardToPlayer();
-    }
-    
-    // Function to deal a card to the player
-    function dealCardToPlayer() {
-        const allCards = deckContainer.querySelectorAll('card-element');
-        if (allCards.length === 0) {
-            alert("No more cards in the deck!");
-            return;
-        }
-        
-        const cardToDeal = allCards[0];
-        cardToDeal.classList.add("fade-out");
+        dealCardToHand(handContainerPlayer);
         
         setTimeout(() => {
-            slideCardIntoHand(cardToDeal, handContainerPlayer);
-            
-            // Ensure the card is face up
-            if (!cardToDeal._isFaceUp) {
-                cardToDeal.toggle();
-            }
-            
-            arrangeCardsInStack();
-            updateHandValues();
-            updateCardCounter();
-            
-            // Check if player busts
             if (checkBust(handContainerPlayer)) {
                 console.log("Player busts!");
                 endGame("dealer");
-            } else {
-                // Re-enable buttons
-                hitButton.disabled = false;
-                standButton.disabled = false;
+                return;
             }
-        }, 600);
+            
+            console.log("Player has " + calculateHandValue(Array.from(handContainerPlayer.querySelectorAll('card-element'))));
+            
+            // Enable buttons after dealing a card
+            hitButton.disabled = false;
+            standButton.disabled = false;
+        }, 800);
     }
+    
     
     // Function to handle the player's Stand action
     function playerStand() {
@@ -689,8 +643,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Check for any face-down cards and flip them
         for (let card of dealerCards) {
-            if (!card._isFaceUp) {
-                card.toggle();
+            if (!card.controller?.isFaceUp()) {
+                card.controller?.toggleCard();
                 dealerCardFlipped = true;
                 break; // Only flip one card at a time for better animation
             }
@@ -733,23 +687,24 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             slideCardIntoHand(cardToDeal, handContainerDealer);
             
-            // Dealer cards are always face up during play
-            if (!cardToDeal._isFaceUp) {
-                cardToDeal.toggle();
-            }
-            
-            arrangeCardsInStack();
-            updateHandValues();
-            updateCardCounter();
-            
-            // Check if dealer busts
-            if (checkBust(handContainerDealer)) {
-                console.log("Dealer busts!");
-                endGame("player");
-            } else {
-                // Continue dealer's turn after a short delay
-                setTimeout(dealerPlay, 700);
-            }
+            setTimeout(() => {
+                if (!cardToDeal.controller?.isFaceUp()) {
+                    cardToDeal.controller?.toggleCard();
+                }
+                
+                setTimeout(() => {
+                    arrangeCardsInStack();
+                    updateHandValues();
+                    updateCardCounter();
+                    
+                    if (checkBust(handContainerDealer)) {
+                        console.log("Dealer busts!");
+                        endGame("player");
+                    } else {
+                        setTimeout(dealerPlay, 700);
+                    }
+                }, 300);
+            }, 600); 
         }, 600);
     }
     
@@ -803,6 +758,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Enable new game button
         newGameButton.disabled = false;
+        hitButton.disabled = true;
+        standButton.disabled = true;
     }
 
     // Function to deal cards for a new game (after shuffle completes)
