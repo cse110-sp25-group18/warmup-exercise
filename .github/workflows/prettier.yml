@@ -31,5 +31,4 @@ jobs:
       - name: Run Prettier
         uses: creyD/prettier_action@v4.3
         with:
-          only_changed: true
           prettier_options: "--write **/*.js"
