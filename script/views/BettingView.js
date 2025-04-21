@@ -31,14 +31,6 @@ class BettingView {
         });
     }
     /**
-     * Updates the bankroll
-     */
-    updateBankrollDisplay() {
-        const bankroll = sessionStorage.getItem("bankroll");
-        document.getElementById("bankroll-display").textContent = `Bankroll: $${bankroll}`;
-    }
-
-    /**
      * Updates displayed amount in bankroll
      * @param {number} amount 
      */
