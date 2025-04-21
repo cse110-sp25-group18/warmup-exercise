@@ -23,6 +23,13 @@
         <div class="game-controls">
             <div id="left-controls">
                 <button id="new-game-button">New Game</button>
+                <div class="betting-controls">
+                    <label for="bet-input">Place Your Bet: $</label>
+                    <input type="number" id="bet-input" min="1" value="10">
+                    <button id="place-bet-button">Place Bet</button>
+                    <p id="bet-status"></p>
+                    <p><span id="bankroll-display">100</span></p>
+                </div>
             </div>
             
             <div id="deck-container">
@@ -41,15 +48,14 @@
             <div class="score-display">Player: <span id="player-score">0</span></div>
         </div>
 
-        <div class="admin-controls">
+        <div class="admin-controls" style="display: none">
             <button id="flip-button">Flip</button>
             <button id="shuffle-button">Shuffle</button>
             <button id="deal-button-dealer">Deal to Dealer</button>
             <button id="deal-button-player">Deal to Player</button>
             <button id="reset-button">Reset</button>
-        <button id="rules-button">Rules</button>
-
         </div>
+        <button id="rules-button">Rules</button>
         <footer>
             <p>Copyright 2025 by CSE110 25 Spring Group 18</p>
         </footer>
