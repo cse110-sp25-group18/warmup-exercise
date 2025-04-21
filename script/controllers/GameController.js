@@ -218,6 +218,7 @@ class GameController {
         
         // Animation logic for shuffling
         this.animateShuffle(allCards, event, callback);
+        
     }
     
     /**
@@ -228,51 +229,58 @@ class GameController {
      */
     animateShuffle(allCards, event, callback) {
         // Only get visible cards for animation (max 3)
-        const visibleCards = allCards.filter(card => card.style.display !== 'none');
+        const visibleCards = allCards.filter(
+            (card) => card.style.display !== "none"
+        );
         const cardsToAnimate = visibleCards.slice(0, 3);
         let topCardFlipped = false;
-        
+
         // First flip any face-up cards
-        cardsToAnimate.forEach(card => {
-            if(card.controller?.isFaceUp()){
+        cardsToAnimate.forEach((card) => {
+            if (card.controller?.isFaceUp()) {
                 card.controller?.disableClick();
                 card.controller?.toggleCard();
                 setTimeout(() => this.handleShuffle(event, callback), 700);
                 topCardFlipped = true;
             }
         });
-        
+
         if (topCardFlipped) return;
-        
+
         // Animation timing constants
         const alignDuration = 150;
         const animationDuration = 300;
         const cardDelay = 200;
         const finalDelay = 150;
-        
+
         // Save original positions
-        const originalTransforms = cardsToAnimate.map(card => ({
-            left: card.style.left || '0px',
-            top: card.style.top || '0px',
-            zIndex: card.style.zIndex || '0'
+        const originalTransforms = cardsToAnimate.map((card) => ({
+            left: card.style.left || "0px",
+            top: card.style.top || "0px",
+            zIndex: card.style.zIndex || "0",
         }));
-        
+
         // Step 1: Align cards
-        cardsToAnimate.forEach(card => {
+        cardsToAnimate.forEach((card) => {
             card.style.transition = `all ${alignDuration}ms ease-in-out`;
-            card.dataset.originalTransform = card.style.transform || '';
-            card.style.left = '0px';
-            card.style.top = '0px';
+            card.dataset.originalTransform = card.style.transform || "";
+            card.style.left = "0px";
+            card.style.top = "0px";
         });
-        
+
         // Calculate animation timings
         const startTime = alignDuration + 50;
-        const upTimes = cardsToAnimate.map((_, index) => startTime + (index * cardDelay));
+        const upTimes = cardsToAnimate.map(
+            (_, index) => startTime + index * cardDelay
+        );
         const lastCardUpTime = upTimes[upTimes.length - 1] + animationDuration;
-        const downTimes = cardsToAnimate.map((_, index) => lastCardUpTime + cardDelay + (index * cardDelay));
-        const lastCardDownTime = downTimes[downTimes.length - 1] + animationDuration;
+        const downTimes = cardsToAnimate.map(
+            (_, index) => lastCardUpTime + cardDelay + index * cardDelay
+        );
+        const lastCardDownTime =
+            downTimes[downTimes.length - 1] + animationDuration;
         const returnTime = lastCardDownTime + finalDelay;
-        
+
         // Step 2: Animate cards up
         cardsToAnimate.forEach((card, index) => {
             setTimeout(() => {
@@ -280,15 +288,15 @@ class GameController {
                 card.style.transform = `translateY(-30px)`;
             }, upTimes[index]);
         });
-        
+
         // Step 3: Animate cards down
         cardsToAnimate.forEach((card, index) => {
             setTimeout(() => {
                 card.style.transition = `transform ${animationDuration}ms ease-in-out`;
-                card.style.transform = '';
+                card.style.transform = "";
             }, downTimes[index]);
         });
-        
+
         // Step 4: Complete animation and perform actual shuffle
         setTimeout(() => {
             // Return cards to original positions
@@ -298,13 +306,13 @@ class GameController {
                 card.style.top = originalTransforms[index].top;
                 card.style.zIndex = originalTransforms[index].zIndex;
             });
-            
+
             // After animation, shuffle the deck
             setTimeout(() => {
                 this.performShuffle(callback);
             }, alignDuration);
         }, returnTime);
-        
+
     }
     
     /**
@@ -314,41 +322,48 @@ class GameController {
     performShuffle(callback) {
         // Get all cards from deck
         const allCards = this.systemView.getDeckCards();
-        
+
         // Update model with current deck
         this.systemModel.setDeckCards(allCards);
-        
+
         // Shuffle the deck in the model
         this.systemModel.shuffleDeck();
-        
+
         // Remove all cards from DOM
-        allCards.forEach(card => this.systemView.deckContainer.removeChild(card));
-        
+        allCards.forEach((card) =>
+            this.systemView.deckContainer.removeChild(card)
+        );
+
         // Ensure all cards are face down
-        allCards.forEach(card => {
+        allCards.forEach((card) => {
             if (card.controller?.isFaceUp()) {
                 card.controller?.toggleCard();
             }
         });
-        
+
         // Add shuffled cards back in reverse order
         for (let i = this.systemModel.deckCards.length - 1; i >= 0; i--) {
-            this.systemView.deckContainer.appendChild(this.systemModel.deckCards[i]);
+            this.systemView.deckContainer.appendChild(
+                this.systemModel.deckCards[i]
+            );
         }
-        
+
         // Debug log
-        console.log('Cards after shuffle (top to bottom):');
+        console.log("Cards after shuffle (top to bottom):");
         this.systemModel.deckCards.forEach((card, index) => {
             const suit = card.controller?.getSuit();
             const rank = card.controller?.getRank();
             // console.log(`${index + 1}. ${rank} of ${suit}`);
         });
-        
+
         // Re-arrange cards in stack
         this.arrangeCardsInStack();
-                
+
         // Call callback if provided
         this.executeCallback(callback);
+
+        // Re-enable buttons after shuffle
+        this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
     }
     
     /**
