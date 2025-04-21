@@ -24,3 +24,7 @@ jobs:
         uses: creyD/prettier_action@master
         with:
           prettier_options: "--write **/*.js"
+
+      - name: Ignore cleanup error
+        run: echo "Ignore any git-related cleanup error (e.g. package-lock.json not found)"
+        continue-on-error: true
