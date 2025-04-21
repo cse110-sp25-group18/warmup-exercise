@@ -38,7 +38,7 @@ h1::after {
     flex-wrap: nowrap;
     justify-content: center;
     gap: 0;
-    min-height: 150px;
+    min-height: 210px;
     margin-bottom: 50px;
     padding: 30px 60px;
     background-color: rgba(48, 129, 208, 0.85);
