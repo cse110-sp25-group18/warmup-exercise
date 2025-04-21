@@ -20,11 +20,11 @@ class GameController {
         // Create models
         this.systemModel = new SystemModel();
         this.playerModel = new PlayerModel();
+        this.bettingModel = new BettingModel();
+
         // Create views
         this.systemView = new SystemView();
         this.playerView = new PlayerView();
-
-        this.bettingModel = new BettingModel();
         this.bettingView = new BettingView();
 
         // Initialize the user's starting bankroll
@@ -374,7 +374,6 @@ class GameController {
         // Get the top card from deck
         const cardToDeal = this.systemView.getTopCard();
         if (!cardToDeal) {
-            // 4
             this.setAllButtonStates(false, false, false, false, false, false, false);
             return;
         }
@@ -414,7 +413,6 @@ class GameController {
             this.updateCounters();
             
             // Re-enable buttons
-            //4
             this.setAllButtonStates(false, false, false, false, false, false, false);
             
             if (target === 'player') {
@@ -508,6 +506,7 @@ class GameController {
             this.bettingView.showBetStatus("Place a valid bet before starting the game!", true);
             return;
         }
+        // Disable all buttons
         this.setAllButtonStates(false, true, true, true, true, true, true);
         
         // Check if enough cards in deck
@@ -625,14 +624,16 @@ class GameController {
     }
     /**
      * Handles user placing a bet
-     * @param {*} amount 
+     * @param {number} amount - amount that was bet
      */
     handleBet(amount) {
+
         if (this.bettingModel.placeBet(amount)) {
+            // Updates bankroll if it was a successful bet
             this.bettingView.updateBankrollDisplay(this.bettingModel.getBankroll());
             this.bettingView.showBetStatus(`Bet of $${amount} placed.`);
-            // Enable the New Game button or call startNewGame() if ready
         } else {
+            // Error message if it was a bad bet
             this.bettingView.showBetStatus("Invalid bet!", true);
         }
     }
@@ -793,6 +794,8 @@ class GameController {
             "dealer": "Dealer wins!",
             "tie": "It's a tie!"
         };
+
+        // Updates betting model
         this.bettingModel.resolveBet(winner);
         this.bettingView.updateBankrollDisplay(this.bettingModel.getBankroll());
         this.bettingView.betInput.value = "";
