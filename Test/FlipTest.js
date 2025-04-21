@@ -3,7 +3,11 @@ import Card from '../script/card.js';
 // Register custom element if not already registered
 try {
     customElements.define('card-element', Card);
-} catch (error) {
+} catch (error) 
+
+
+
+{
     console.log('Card element already defined');
 }
 
