@@ -2,102 +2,102 @@
  * CardController - Connects the card model and view
  */
 class CardController {
-    constructor(model, view) {
-        this.model = model;
-        this.view = view;
-        
-        // Connect the view to its model
-        this.view.model = this.model;
-        
-        this.clickHandler = this.handleCardClick.bind(this);
-        
-        // Set up event listeners
-        this.setupEventListeners();
-        
-        // Initial render
-        this.view.render();
-    }
-    
-    handleCardClick() {
-        // Card-click event only comes from top cards, so toggle it
-        this.toggleCard();
-    }
-    
-    setupEventListeners() {
-        this.view.addEventListener('card-click', this.clickHandler);
-    }
-    
-    disableClick() {
-        this.view.removeEventListener('card-click', this.clickHandler);
-        // console.log(`Card ${this.model.suit} ${this.model.rank} click disabled`);
-    }
-    
-    enableClick() {
-        this.view.removeEventListener('card-click', this.clickHandler);
-        this.view.addEventListener('card-click', this.clickHandler);
-        // console.log(`Card ${this.model.suit} ${this.model.rank} click enabled`);
-    }
-    
-    // Update model and view when toggling the card
-    toggleCard() {
-        // Update the model
-        this.model.toggle();
-        
-        // Update the view
-        this.view.toggleFace();
-        
-        // console.log("Card toggled:", this.model.isFaceUp ? "face-up" : "face-down");
-    }
-    
-    // Set this card as the top card in the stack
-    setAsTopCard(isTop) {
-        // Update the model
-        this.model.isTopCard = isTop;
-        
-        // Update the view
-        this.view.setAsTopCard(isTop);
-    }
-    
-    // Update the card's position in the stack
-    updatePosition(index, offset, maxVisible) {
-        // Update the model
-        this.model.index = index;
-        
-        // Update the view
-        this.view.updatePosition(index, offset, maxVisible);
-    }
-    
-    // Get the current rank of the card
-    getRank() {
-        return this.model.rank;
-    }
-    
-    // Get the current suit of the card
-    getSuit() {
-        return this.model.suit;
-    }
-    
-    // Update the card's rank
-    setRank(rank) {
-        this.model.rank = rank;
-        this.view.render();
-    }
-    
-    // Update the card's suit
-    setSuit(suit) {
-        this.model.suit = suit;
-        this.view.render();
-    }
-    
-    // Check if the card is face-up
-    isFaceUp() {
-        return this.model.isFaceUp;
-    }
-    
-    // Get the DOM element of the view
-    getElement() {
-        return this.view;
-    }
-} 
+  constructor(model, view) {
+    this.model = model;
+    this.view = view;
+
+    // Connect the view to its model
+    this.view.model = this.model;
+
+    this.clickHandler = this.handleCardClick.bind(this);
+
+    // Set up event listeners
+    this.setupEventListeners();
+
+    // Initial render
+    this.view.render();
+  }
+
+  handleCardClick() {
+    // Card-click event only comes from top cards, so toggle it
+    this.toggleCard();
+  }
+
+  setupEventListeners() {
+    this.view.addEventListener("card-click", this.clickHandler);
+  }
+
+  disableClick() {
+    this.view.removeEventListener("card-click", this.clickHandler);
+    // console.log(`Card ${this.model.suit} ${this.model.rank} click disabled`);
+  }
+
+  enableClick() {
+    this.view.removeEventListener("card-click", this.clickHandler);
+    this.view.addEventListener("card-click", this.clickHandler);
+    // console.log(`Card ${this.model.suit} ${this.model.rank} click enabled`);
+  }
+
+  // Update model and view when toggling the card
+  toggleCard() {
+    // Update the model
+    this.model.toggle();
+
+    // Update the view
+    this.view.toggleFace();
+
+    // console.log("Card toggled:", this.model.isFaceUp ? "face-up" : "face-down");
+  }
+
+  // Set this card as the top card in the stack
+  setAsTopCard(isTop) {
+    // Update the model
+    this.model.isTopCard = isTop;
+
+    // Update the view
+    this.view.setAsTopCard(isTop);
+  }
+
+  // Update the card's position in the stack
+  updatePosition(index, offset, maxVisible) {
+    // Update the model
+    this.model.index = index;
+
+    // Update the view
+    this.view.updatePosition(index, offset, maxVisible);
+  }
+
+  // Get the current rank of the card
+  getRank() {
+    return this.model.rank;
+  }
+
+  // Get the current suit of the card
+  getSuit() {
+    return this.model.suit;
+  }
+
+  // Update the card's rank
+  setRank(rank) {
+    this.model.rank = rank;
+    this.view.render();
+  }
+
+  // Update the card's suit
+  setSuit(suit) {
+    this.model.suit = suit;
+    this.view.render();
+  }
+
+  // Check if the card is face-up
+  isFaceUp() {
+    return this.model.isFaceUp;
+  }
+
+  // Get the DOM element of the view
+  getElement() {
+    return this.view;
+  }
+}
 
 export default CardController;
