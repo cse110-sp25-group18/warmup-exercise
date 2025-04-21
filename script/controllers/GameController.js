@@ -364,6 +364,8 @@ class GameController {
 
         // Re-enable buttons after shuffle
         this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
+
+        
     }
     
     /**

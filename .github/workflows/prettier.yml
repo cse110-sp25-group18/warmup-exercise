@@ -2,14 +2,22 @@ name: Prettier
  
 on:
   pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
  
 jobs:
   prettify:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.head_ref }}
+          # This is important to fetch the changes to the previous commit
           fetch-depth: 0
  
       - name: Set up Node.js
@@ -21,6 +29,7 @@ jobs:
         run: npm install prettier --save-dev
  
       - name: Run Prettier
-        uses: creyD/prettier_action@master
+        uses: creyD/prettier_action@v4.3
         with:
-          prettier_options: "--write"
+          only_changed: true
+          prettier_options: "--write **/*.js"
