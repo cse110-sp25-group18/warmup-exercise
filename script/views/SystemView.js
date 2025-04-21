@@ -106,6 +106,11 @@ class SystemView {
    * @param {HTMLElement} card - The card element to return
    */
   returnCardToDeck(card) {
+    //card controller is bind to the card element
+    if (card.controller?.isFaceUp()) {
+      card.controller?.toggleCard();
+    }
+
     card.classList.add("unrender");
     card.classList.remove("fade-out", "in-hand");
 
