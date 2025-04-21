@@ -3,6 +3,8 @@ import SystemModel from "../models/SystemModel.js";
 import PlayerModel from "../models/PlayerModel.js";
 import SystemView from "../views/SystemView.js";
 import PlayerView from "../views/PlayerView.js";
+import BettingModel from "../models/BettingModel.js";
+import BettingView from "../views/BettingView.js";
 
 
 const DISABLE = true;
@@ -18,16 +20,25 @@ class GameController {
         // Create models
         this.systemModel = new SystemModel();
         this.playerModel = new PlayerModel();
-        
         // Create views
         this.systemView = new SystemView();
         this.playerView = new PlayerView();
+
+        this.bettingModel = new BettingModel();
+        this.bettingView = new BettingView();
+
+        // Initialize the user's starting bankroll
+        if (!sessionStorage.getItem("bankroll")) {
+            sessionStorage.setItem("bankroll", "100");
+        }
         
         // Initialize the game
         this.initializeGame();
         
         // Bind event handlers
         this.bindEventHandlers();
+        this.bettingView.updateBankrollDisplay(this.bettingModel.getBankroll());
+        this.bettingView.bindPlaceBet((amount) => this.handleBet(amount));
     }
     
     /**
@@ -40,12 +51,13 @@ class GameController {
      * @param {boolean} standDisabled - Whether stand button should be disabled
      */
     setAllButtonStates(adminDisabled = false, dealerDisabled = false, playerDisabled = false, 
-                      gameDisabled = false, hitDisabled = true, standDisabled = true) {
+                      gameDisabled = false, hitDisabled = true, standDisabled = true, betDisabled=false) {
         this.systemView.setAdminButtonsState(adminDisabled);
         this.playerView.setDealerButtonsState(dealerDisabled);
         this.playerView.setPlayerButtonsState(playerDisabled);
         this.systemView.setNewGameButtonState(gameDisabled);
         this.playerView.setGameActionButtonsState(hitDisabled, standDisabled);
+        this.bettingView.setBetButtonState(betDisabled);
     }
     
     /**
@@ -207,7 +219,7 @@ class GameController {
         console.log("Shuffle button clicked");
         
         // Disable buttons during animation
-        this.setAllButtonStates(DISABLE, DISABLE, DISABLE, DISABLE, DISABLE, DISABLE);
+        this.setAllButtonStates(DISABLE, DISABLE, DISABLE, DISABLE, DISABLE, DISABLE, DISABLE);
         
         const allCards = this.systemView.getDeckCards();
         if (allCards.length < 1) {
@@ -357,12 +369,13 @@ class GameController {
      */
     dealCardToHand(target) {
         // Disable buttons during animation
-        this.setAllButtonStates(true, true, true, true);
+        this.setAllButtonStates(true, true, true, true, true, true, true);
         
         // Get the top card from deck
         const cardToDeal = this.systemView.getTopCard();
         if (!cardToDeal) {
-            this.setAllButtonStates(false, false, false, false);
+            // 4
+            this.setAllButtonStates(false, false, false, false, false, false, false);
             return;
         }
         
@@ -401,7 +414,8 @@ class GameController {
             this.updateCounters();
             
             // Re-enable buttons
-            this.setAllButtonStates(false, false, false, false);
+            //4
+            this.setAllButtonStates(false, false, false, false, false, false, false);
             
             if (target === 'player') {
                 setTimeout(() => {
@@ -429,7 +443,8 @@ class GameController {
         console.log("Reset button clicked");
         
         // Disable buttons during operation
-        this.setAllButtonStates(true, true, true, true);
+        // 4
+        this.setAllButtonStates(true, true, true, true, true, true, true);
         
         // Get cards from both hands
         const dealerCards = this.playerView.getHandCards('dealer');
@@ -437,7 +452,8 @@ class GameController {
         
         // If no cards in hands, nothing to reset
         if (dealerCards.length === 0 && playerCards.length === 0) {
-            this.setAllButtonStates(false, false, false, false);
+            // 4
+            this.setAllButtonStates(false, false, false, false, false, false, false);
             return;
         }
         
@@ -463,7 +479,8 @@ class GameController {
             this.updateCounters();
             
             // Re-enable buttons
-            this.setAllButtonStates(false, false, false, false);
+            // 4
+            this.setAllButtonStates(false, false, false, false, false, false, false);
             
             // Shuffle the deck
             this.shuffleDeck();
@@ -486,7 +503,12 @@ class GameController {
         console.log("Starting new game...");
         
         // Disable all game buttons during new game setup
-        this.setAllButtonStates(false, true, true, true, true, true);
+        const bet = this.bettingModel.getBet();
+            if (bet <= 0) {
+            this.bettingView.showBetStatus("Place a valid bet before starting the game!", true);
+            return;
+        }
+        this.setAllButtonStates(false, true, true, true, true, true, true);
         
         // Check if enough cards in deck
         if (this.systemModel.getDeckCount() < 4) {
@@ -600,6 +622,19 @@ class GameController {
      */
     dealInitialCard(target, faceUp) {
         this.dealCard(target, faceUp);
+    }
+    /**
+     * Handles user placing a bet
+     * @param {*} amount 
+     */
+    handleBet(amount) {
+        if (this.bettingModel.placeBet(amount)) {
+            this.bettingView.updateBankrollDisplay(this.bettingModel.getBankroll());
+            this.bettingView.showBetStatus(`Bet of $${amount} placed.`);
+            // Enable the New Game button or call startNewGame() if ready
+        } else {
+            this.bettingView.showBetStatus("Invalid bet!", true);
+        }
     }
     
     /**
@@ -747,7 +782,7 @@ class GameController {
         this.systemModel.endGame(winner);
         
         // Set buttons to appropriate end-game state
-        this.setAllButtonStates(false, true, true, false, true, true);
+        this.setAllButtonStates(false, true, true, false, true, true, false);
         
         // Update UI with result
         this.systemView.displayGameResult(winner);
@@ -758,6 +793,11 @@ class GameController {
             "dealer": "Dealer wins!",
             "tie": "It's a tie!"
         };
+        this.bettingModel.resolveBet(winner);
+        this.bettingView.updateBankrollDisplay(this.bettingModel.getBankroll());
+        this.bettingView.betInput.value = "";
+        this.bettingView.showBetStatus("Place your next bet.");
+
         console.log(resultMessages[winner] || "Game ended.");
     }
     

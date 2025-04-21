@@ -217,7 +217,7 @@ footer a {
     gap: 10px;
 }
 
-#hit-button, #stand-button, #new-game-button {
+#hit-button, #stand-button, #new-game-button, #place-bet-button {
     padding: 12px 24px;
     font-family: 'Spongebob Font Wide', sans-serif;
     font-size: 18px;
@@ -231,19 +231,19 @@ footer a {
     min-width: 150px;
 }
 
-#hit-button:hover, #stand-button:hover, #new-game-button:hover {
+#hit-button:hover, #stand-button:hover, #new-game-button:hover, #place-bet-button:hover {
     background-color: #F4F27E;
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-#hit-button:active, #stand-button:active, #new-game-button:active {
+#hit-button:active, #stand-button:active, #new-game-button:active, #place-bet-button:active {
     transform: translateY(1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Apply disabled styling only to actually disabled buttons */
-#hit-button:disabled, #stand-button:disabled, #new-game-button:disabled {
+#hit-button:disabled, #stand-button:disabled, #new-game-button:disabled, #place-bet-button:disabled {
     opacity: 0.7;
     cursor: not-allowed;
 }
@@ -269,4 +269,54 @@ h1, #hit-button, #stand-button, #new-game-button {
     to {
         text-shadow: 0 0 15px rgba(230, 200, 0, 0.8);
     }
+}
+.betting-controls {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border: 2px solid #F4F27E;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Spongebob Font Wide', sans-serif;
+    color: #fff;
+    margin: 0px 0px 10px;
+}
+
+.betting-controls label {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #F4F27E;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#bet-input {
+    padding: 10px;
+    font-size: 16px;
+    font-family: 'Spongebob Font Wide', sans-serif;
+    border: 2px solid #000;
+    border-radius: 6px;
+    width: 100px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#place-bet-button {
+    margin-bottom: 10px;
+}
+
+#bet-status {
+    font-size: 14px;
+    min-height: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+#bankroll-display {
+    font-size: 16px;
+    font-weight: bold;
+    color: #FFF5C2;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }

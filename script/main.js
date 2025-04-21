@@ -9,7 +9,19 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Create controller that will handle all game components
     const gameController = new GameController();
+
+    if (!sessionStorage.getItem("bankroll")) {
+        sessionStorage.setItem("bankroll", "100");
+    }
+    updateBankrollDisplay();
     
     // Game is now initialized by the controller
 });
+/**
+ * Updates the bankroll
+ */
+function updateBankrollDisplay() {
+    const bankroll = sessionStorage.getItem("bankroll");
+    document.getElementById("bankroll-display").textContent = `Bankroll: $${bankroll}`;
+}
 
