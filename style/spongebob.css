@@ -95,7 +95,7 @@ h1::after {
 
 .card-container {
     width: 100px;
-    height: 210px;
+    height: 140px;
     perspective: 1000px;
     cursor: pointer;
     transition: transform 0.3s;
