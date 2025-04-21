@@ -18,8 +18,6 @@ class SystemView {
             reset: document.getElementById("reset-button"),
             rules: document.getElementById("rules-button")
         };
-
-        
         
         // Game buttons
         this.newGameButton = document.getElementById("new-game-button");
