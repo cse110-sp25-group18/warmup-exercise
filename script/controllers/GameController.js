@@ -72,6 +72,7 @@ class GameController {
         
         // Shuffle the deck
         this.shuffleDeck();
+        this.setAllButtonStates(false, false, false, false, true, true, false);
     }
     
     /**
