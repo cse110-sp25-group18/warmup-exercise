@@ -1,5 +1,7 @@
 # Blackjack Game
+View our intro video [here](https://youtu.be/1mZybbG_3cw )
 
+Start playing [here](https://cse110-sp25-group18.github.io/warmup-exercise/)
 ## Game Rules
 
 Blackjack is a popular card game where the goal is to have a hand value as close to 21 as possible without exceeding it.
