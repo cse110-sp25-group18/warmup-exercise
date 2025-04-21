@@ -15,11 +15,11 @@ class BettingView {
         this.betStatusDisplay = document.getElementById("bet-status");
 
         // Initialize the user's starting bankroll
-        if (!sessionStorage.getItem("bankroll")) {
-            sessionStorage.setItem("bankroll", "100");
-        }
+        this.initializeBankroll();
     }
-
+    initializeBankroll(){
+        sessionStorage.setItem("bankroll", "100");
+    }
     /**
      * Bind betting event handlers
      * @param {Object} handler - Object containing event handler functions

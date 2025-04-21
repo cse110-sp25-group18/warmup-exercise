@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!sessionStorage.getItem("bankroll")) {
         sessionStorage.setItem("bankroll", "100");
-    }
-    updateBankrollDisplay();
-    
+    }    
     // Game is now initialized by the controller
 });
