@@ -26,11 +26,6 @@ class GameController {
         this.systemView = new SystemView();
         this.playerView = new PlayerView();
         this.bettingView = new BettingView();
-
-        // Initialize the user's starting bankroll
-        if (!sessionStorage.getItem("bankroll")) {
-            sessionStorage.setItem("bankroll", "100");
-        }
         
         // Initialize the game
         this.initializeGame();

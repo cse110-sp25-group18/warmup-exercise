@@ -17,11 +17,3 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Game is now initialized by the controller
 });
-/**
- * Updates the bankroll
- */
-function updateBankrollDisplay() {
-    const bankroll = sessionStorage.getItem("bankroll");
-    document.getElementById("bankroll-display").textContent = `Bankroll: $${bankroll}`;
-}
-

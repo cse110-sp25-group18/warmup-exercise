@@ -13,6 +13,11 @@ class BettingView {
 
         // messages on the status of the bet
         this.betStatusDisplay = document.getElementById("bet-status");
+
+        // Initialize the user's starting bankroll
+        if (!sessionStorage.getItem("bankroll")) {
+            sessionStorage.setItem("bankroll", "100");
+        }
     }
 
     /**
@@ -24,6 +29,13 @@ class BettingView {
             const amount = parseInt(this.betInput.value, 10);
             handler(amount);
         });
+    }
+    /**
+     * Updates the bankroll
+     */
+    updateBankrollDisplay() {
+        const bankroll = sessionStorage.getItem("bankroll");
+        document.getElementById("bankroll-display").textContent = `Bankroll: $${bankroll}`;
     }
 
     /**
