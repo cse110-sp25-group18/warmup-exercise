@@ -365,6 +365,7 @@ class GameController {
         // Re-enable buttons after shuffle
         this.setAllButtonStates(ENABLE, ENABLE, ENABLE, ENABLE, ENABLE, ENABLE);
     }
+    
     /**
      * Deal a card from deck to a hand
      * @param {string} target - 'dealer' or 'player'
