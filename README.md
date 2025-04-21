@@ -1,5 +1,5 @@
 # Blackjack Game
-View our intro video [here](https://www.youtube.com/watch?v=zvvFUsIAcIg&ab_channel=AlanDiaz)
+View our intro video [here](https://youtu.be/1mZybbG_3cw )
 
 Start playing [here](https://cse110-sp25-group18.github.io/warmup-exercise/)
 ## Game Rules
